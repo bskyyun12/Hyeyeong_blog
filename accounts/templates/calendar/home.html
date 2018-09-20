@@ -1,0 +1,21 @@
+{% extends 'calendar/base.html' %}
+{% block content %}
+<div class="container">
+    <br>
+    <div class="col-lg-4">
+        <h1>Calendar</h1>
+        <span>Hello, {{ request.user.email }}</span>
+        <a href="/logout">Logout</a>
+    </div>
+    <div class="col-lg-8">
+        <button onclick="window.location='{% url 'add' %}'" type="button" class="btn btn-primary" >Add Entry</button>
+    </div>
+    <hr>
+    <div class="row">
+        <hr>
+        {% for entry in entries %}
+            {% include 'calendar/_calendar_entry.html' %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

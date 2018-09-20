@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <hr>
+    <h1>Edit Profile</h1>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in edit_profile_form %}
+            {{ field.errors }}
+            {% if field.label != 'Password' %}
+                <label>{{ field.label }}</label>
+                <input type="{{ field.type }}" name="{{ field.name }}" value="{{ field.value }}" id="{{ field.id }}" class="form-control">
+            {% endif %}
+        {% endfor %}
+        {% for field in user_profile_image_form %}
+            {{ field.errors }}
+            {% if field.label == 'Image' and field.value %}
+            <label>{{ field.label }} : {{ field.value }}</label>
+            {% else %}
+            <label>{{ field.label }}</label>
+            {% endif %}
+            <input {% if not field.value %}
+                    placeholder="{{ field.label }}"
+                    {% endif %}
+                    {% if field.label == 'Image' %}
+                    type="file" value="{{ field.value }}"
+                    {% else %}
+                    type="{{ field.type }}" value="{{ field.value }}"
+                    {% endif %}
+                    name="{{ field.name }}" id="{{ field.id }}" class="form-control">
+        {% endfor %}
+
+        <br>
+        <button type="submit" name="button" class="btn btn-primary">submit</button>
+    </form>
+</div>
+{% endblock %}

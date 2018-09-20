@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>This is the main page!</h2>
+<h1>Calendar</h1>
+
+<button onclick="window.location='{% url 'album:post_new' %}'" type="button" class="btn btn-primary" >Add Post</button>
+    <hr>
+    <h4>Filter</h4>
+<form class="" method="get">
+    <div class="form-inline ">
+        {% for field in filter.form %}
+            {% if field.name != 'year' and field.name != 'month' %}
+                <input placeholder="{{ field.label }}" name="{{ field.name }}" class="form-control mr-sm-2">
+            {% endif %}
+        {% endfor %}
+        <select class="custom-select mr-sm-2" type="number" name="year" step="any" id="id_year">
+            <option selected="">Year</option>
+            {% for i in "x"|rjust:"2028" %}
+                {% if forloop.counter >= 1987 %}
+                    <option value={{ forloop.counter }}>{{ forloop.counter }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <select class="custom-select mr-sm-2" type="number" name="month" step="any" id="id_month">
+            <option selected="">Month</option>
+            {% for i in "x"|rjust:"12" %}
+                <option value={{ forloop.counter }}>{{ forloop.counter }}</option>
+            {% endfor %}
+        </select>
+        <p></p>
+    </div>
+    <button type="submit" class="btn btn-primary my-2">Search</button>
+</form>
+
+
+<h1 class="my-4 text-center text-lg-left">Thumbnail Gallery</h1>
+
+<div class="row text-center">
+    {% for post in filter.qs %}
+    <div class="col-md-6 col-6">
+        <a href="{% url 'album:post_detail' pk=post.pk %}" class="d-block mb-2">
+        <h2>{{ post.date|date:"Y.m.d" }}</h2>
+        {% if post.image %}
+            <img class="img-fluid img-thumbnail w3-round-xlarge" src="{{ post.image.url }}"/>
+        {% endif %}
+        </a>
+        <p>Posted by {{ post.author }}</p>
+        <p>title : {{ post.title }}</p>
+        <p>description : {{ post.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+
+{% block content_right %}
+<h4>Other People</h4>
+{% for user in users %}
+    <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+        <h3>{{ user }}</h3>
+    </a>
+    {% if not user in friends %}
+    <a href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
+        <button type="button" class="btn btn-success">Add Friend</button>
+    </a>
+    {% endif %}
+{% endfor %}
+<h4>Friends</h4>
+{% for friend in friends %}
+    <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}">
+        <h3>{{ friend }}</h3>
+    </a>
+    <a href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
+        <button type="button" class="btn btn-default">Remove Friend</button>
+    </a>
+{% endfor %}
+{% endblock %}

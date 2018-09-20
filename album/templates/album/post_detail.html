@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="post">
+    <hr>
+    {% if user.is_authenticated and user.is_superuser or user == post.author %}
+        <!-- 수정버튼 -->
+        <a class="btn btn-secondary btn-sm" href="{% url 'album:post_edit' pk=post.pk %}">Edit</a>
+        <!-- 삭제버튼 -->
+        <a class="btn btn-danger btn-sm" href="{% url 'album:post_remove' pk=post.pk %}">Delete</a>
+    {% endif %}
+
+    <h1>title : {{ post.title }}</h1>
+    <p>description : {{ post.description|linebreaksbr }}</p>
+    <br>author : {{ post.author }}
+    <br>date : {{ post.date|date:"M d, Y" }} <!-- => Sep 11, 2018 3:45a.m.  -->
+    <br><br>
+</div>
+
+<hr>
+{% if user.is_authenticated %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.comment }}
+    <br>
+    <button type="submit" class="btn btn-primary btn-sm">Add Comment</button>
+    <hr>
+</form>
+
+{% for comment in post.comments.all %}
+<div class="comment">
+    <div class="date">
+        {{ comment.created_date }}
+    </div>
+        {% for user in users %}
+            {% if user.email == comment.author %}
+            <img class="comment" src="{{ user.userprofile.image.url }}" width="62"/>
+            {% endif %}
+        {% endfor %}
+    <strong> {{ comment.author }}</strong> : {{ comment.comment }}
+    {% if user.is_superuser or user.email == comment.author %}
+    <a class="btn btn-danger btn-sm" href="{% url 'album:comment_remove' pk=comment.pk %}">Delete</a>
+    {% endif %}
+    <hr>
+</div>
+{% empty %}
+<p>No comments here yet :(</p>
+{% endfor %}
+{% else %}
+<div class="comment">
+    <p>Login is required to read comments.</p>
+</div>
+{% endif %}
+
+{% endblock %}

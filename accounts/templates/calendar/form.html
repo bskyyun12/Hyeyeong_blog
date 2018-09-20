@@ -1,0 +1,24 @@
+{% extends 'calendar/base.html' %}
+{% block content %}
+    <div class="container form-group">
+        <br>
+        <div class="row">
+            <div class="col-lg-6">
+                <h1>Add a new Entry!</h1>
+            </div>
+            <div class="col-lg-6">
+                <button onclick="window.location='{% url 'home' %}'" class="btn btn-primary">Go back</button>
+            </div>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                {{ field.errors }}
+                <label>{{ field.label }}</label>
+                <input placeholder="{{ field.label }}" name="{{ field.name }}" class="form-control">
+            {% endfor %}
+            <br>
+            <button type="submit" name="button" class="btn btn-primary">submit</button>
+        </form>
+    </div>
+{% endblock %}
