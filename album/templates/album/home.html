@@ -21,7 +21,7 @@
         {% if title %}
             Searched by Title : {{title}}
         {% elif year_month %}
-        <button type="submit" class="btn btn-primary mr-sm-5" name="year_month"  value="{{pre_year_month}}">Pre</button>
+        <button type="submit" class="btn btn-primary mr-sm-5" name="year_month"  value="{{pre_year_month}}">Back</button>
         {{ year_month|date:"Y. m" }}
         <button type="submit" class="btn btn-primary ml-sm-5" name="year_month"  value="{{next_year_month}}">Next</button>
         {% endif %}

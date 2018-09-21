@@ -6,6 +6,7 @@ from accounts.models import User
 from .models import UserProfile
 from django.urls import reverse
 from django.contrib.auth.forms import PasswordChangeForm
+from album.models import Friend
 from django.contrib.auth.decorators import login_required
 from .forms import (
     # EntryForm,
@@ -23,7 +24,14 @@ def view_profile(request, pk=None):
         user_pk = User.objects.get(pk=pk)
     else:
         user_pk = request.user
-    args = {'user': user_pk,}
+
+    friend, created = Friend.objects.get_or_create(current_user=request.user)
+    friends = friend.users.all()
+
+    args = {
+        'user': user_pk,
+        'friends': friends,
+    }
     return render(request, 'accounts/profile.html', args)
 
 @login_required

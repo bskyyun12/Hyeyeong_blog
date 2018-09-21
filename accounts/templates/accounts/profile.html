@@ -35,6 +35,20 @@
     {% if user == request.user %}
     <button onclick="window.location='{% url 'accounts:edit_profile' %}'" class="btn btn-primary">Edit profile</button>
     <button onclick="window.location='{% url 'accounts:change_password' %}'" class="btn btn-primary">Change Password</button>
+    {% else %}
+        {% if not user in friends %}
+            <a href="{% url 'album:change_friends' operation='add' pk=user.pk %}">
+                <button type="button" class="btn btn-success">Add Friend</button>
+            </a>
+        {% else %}
+        {% for friend in friends %}
+            {% if user == friend %}
+            <a href="{% url 'album:change_friends' operation='remove' pk=friend.pk %}">
+                <button type="button" class="btn btn-danger">Remove Friend</button>
+            </a>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

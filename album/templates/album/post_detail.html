@@ -40,9 +40,12 @@
         {% for user in users %}
             {% if user.email == comment.author %}
             <img class="comment rounded-circle" src="{{ user.userprofile.image.url }}" width="62"/>
+            <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+                <strong> {{ comment.author }}</strong>
+            </a> : {{ comment.comment }}
             {% endif %}
         {% endfor %}
-    <strong> {{ comment.author }}</strong> : {{ comment.comment }}
+
     {% if user.is_superuser or user.email == comment.author %}
     <a class="btn btn-danger btn-sm" href="{% url 'album:comment_remove' pk=comment.pk %}">Delete</a>
     {% endif %}

@@ -222,4 +222,4 @@ def change_friends(request, operation, pk):
         Friend.make_friend(request.user, new_friend)
     elif operation == 'remove':
         Friend.lose_friend(request.user, new_friend)
-    return redirect('album:home')
+    return redirect('accounts:view_profile_with_pk', pk=new_friend.pk)
