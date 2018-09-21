@@ -1,0 +1,26 @@
+<h4>Filter</h4>
+<form class="" method="get">
+    <div class="form-inline ">
+        {% for field in filter.form %}
+            {% if field.name != 'year' and field.name != 'month' %}
+                <input placeholder="{{ field.label }}" name="{{ field.name }}" class="form-control mr-sm-2">
+            {% endif %}
+        {% endfor %}
+        <select class="custom-select mr-sm-2" type="number" name="year" step="any" id="id_year">
+            <option selected="">Year</option>
+            {% for i in "x"|rjust:"2028" %}
+                {% if forloop.counter >= 1987 %}
+                    <option value={{ forloop.counter }}>{{ forloop.counter }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <select class="custom-select mr-sm-2" type="number" name="month" step="any" id="id_month">
+            <option selected="">Month</option>
+            {% for i in "x"|rjust:"12" %}
+                <option value={{ forloop.counter }}>{{ forloop.counter }}</option>
+            {% endfor %}
+        </select>
+        <p></p>
+    </div>
+    <button type="submit" class="btn btn-primary my-2">Search</button>
+</form>

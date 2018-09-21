@@ -1,10 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>New post</h1>
-<form method="POST" class="post-form">
+<h1>Edit post</h1>
+
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="save btn btn-default">Save</button>
+    {% for field in form %}
+        {{ field.errors }}
+        {% if field.label == 'Image' and field.value %}
+        <label>{{ field.label }} : {{ field.value }}</label>
+        {% else %}
+        <label>{{ field.label }}</label>
+        {% endif %}
+        <input {% if not field.value %}
+                placeholder="{{ field.label }}"
+                {% endif %}
+                {% if field.label == 'Image' %}
+                type="file" value="{{ field.value }}"
+                {% else %}
+                type="{{ field.type }}" value="{{ field.value }}"
+                {% endif %}
+                name="{{ field.name }}" id="{{ field.id }}" class="form-control">
+    {% endfor %}
+
+    <br>
+    <button type="submit" name="button" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %}

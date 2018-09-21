@@ -1,0 +1,13 @@
+{% extends 'calendar/base.html' %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            {{ field.errors }}
+            <label>{{ field.label }}</label>
+            <input placeholder="{{ field.label }}" name="{{ field.name }}" class="form-control">
+        {% endfor %}
+        <br>
+        <button type="submit" name="button" class="btn btn-primary">submit</button>
+    </form>
+{% endblock %}

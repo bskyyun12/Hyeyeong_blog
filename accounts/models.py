@@ -79,7 +79,7 @@ class UserProfile(models.Model):
     description = models.CharField(blank=True, max_length=100, default='')
     city = models.CharField(blank=True, max_length=100, default='')
     website = models.URLField(blank=True, default='')
-    phone = models.IntegerField(blank=True, default=0)
+    phone = models.CharField(blank=True, max_length=20, default='')
     image = models.ImageField(upload_to='profile_image', blank=True, default='profile_image/framed-portrait128.png')
 
     # Sodra_Sandby가 도시인 유저만 보이게 하고싶을때

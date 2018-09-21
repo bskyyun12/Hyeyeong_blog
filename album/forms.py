@@ -1,13 +1,15 @@
 from django import forms
 from .models import Calendar, Comment
+from django.forms.widgets import SelectDateWidget
 
 class CalendarForm(forms.ModelForm):
+    date = forms.DateField(widget=SelectDateWidget(empty_label="Nothing"))
+
     class Meta:
         model = Calendar
         fields = (
             'title',
             'description',
-            'date',
             'image',
         )
 

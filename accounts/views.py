@@ -6,6 +6,7 @@ from accounts.models import User
 from .models import UserProfile
 from django.urls import reverse
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 from .forms import (
     # EntryForm,
     RegistrationForm,
@@ -16,7 +17,7 @@ from .forms import (
 def index(request):
     return render(request, 'index.html')
 
-
+@login_required
 def view_profile(request, pk=None):
     if pk:
         user_pk = User.objects.get(pk=pk)
@@ -25,7 +26,7 @@ def view_profile(request, pk=None):
     args = {'user': user_pk,}
     return render(request, 'accounts/profile.html', args)
 
-
+@login_required
 def edit_profile(request):
     user_profile = UserProfile.objects.get(user=request.user)
 
@@ -109,14 +110,14 @@ def register(request):
             user = authenticate(email=email, password=password)
             login(request, user)
             ##########
-            return redirect(reverse('home'))
+            return redirect(reverse('album:home'))
     else:
         form = RegistrationForm()
 
     args = {'form': form}
     return render(request, 'registration/reg_form.html', args)
 
-
+@login_required
 def change_password(request):
     if request.method == "POST":
         form = PasswordChangeForm(data=request.POST, user=request.user)

@@ -11,9 +11,14 @@
     {% endif %}
 
     <h1>title : {{ post.title }}</h1>
-    <p>description : {{ post.description|linebreaksbr }}</p>
-    <br>author : {{ post.author }}
-    <br>date : {{ post.date|date:"M d, Y" }} <!-- => Sep 11, 2018 3:45a.m.  -->
+    <a href="{% url 'album:post_detail' pk=post.pk %}" class="d-block mb-2">
+    <h2>{{ post.date|date:"Y.m.d" }}</h2>
+    {% if post.image %}
+        <img class="img-fluid img-thumbnail w3-round-xlarge" src="{{ post.image.url }}"/>
+    {% endif %}
+    </a>
+    <p>description : {{ post.description }}</p>
+    <p>author : {{ post.author }}</p>
     <br><br>
 </div>
 
@@ -34,7 +39,7 @@
     </div>
         {% for user in users %}
             {% if user.email == comment.author %}
-            <img class="comment" src="{{ user.userprofile.image.url }}" width="62"/>
+            <img class="comment rounded-circle" src="{{ user.userprofile.image.url }}" width="62"/>
             {% endif %}
         {% endfor %}
     <strong> {{ comment.author }}</strong> : {{ comment.comment }}

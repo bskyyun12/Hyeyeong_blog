@@ -14,27 +14,27 @@
     <p>Website: {{ user.userprofile.website }}</p>
     <p>Phone: {{ user.userprofile.phone }}</p>
     {% if user.userprofile.image %}
-
-    <div>
-        <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
-        {% if user.userprofile.image.url == "/media/profile_image/framed-portrait128.png" %}
-            <span class="badge badge-light">
-                Icons made by
-                <a href="https://www.flaticon.com/authors/google" title="Google">Google</a>
-                from
-                <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-                is licensed by
-                <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">
-                    CC 3.0 BY
-                </a>
-            </span>
-        {% endif %}
-        <br>
-    </div>
-
+        <div>
+            <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
+            {% if user.userprofile.image.url == "/media/profile_image/framed-portrait128.png" %}
+                <span class="badge badge-light">
+                    Icons made by
+                    <a href="https://www.flaticon.com/authors/google" title="Google">Google</a>
+                    from
+                    <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+                    is licensed by
+                    <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">
+                        CC 3.0 BY
+                    </a>
+                </span>
+            {% endif %}
+            <br>
+        </div>
     {% endif %}
+
+    {% if user == request.user %}
     <button onclick="window.location='{% url 'accounts:edit_profile' %}'" class="btn btn-primary">Edit profile</button>
     <button onclick="window.location='{% url 'accounts:change_password' %}'" class="btn btn-primary">Change Password</button>
-
+    {% endif %}
 </div>
 {% endblock %}

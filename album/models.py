@@ -8,7 +8,7 @@ class Calendar(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     date = models.DateField()
-    image = models.ImageField(upload_to='calendar_image/%Y/%m/%d', blank=True)
+    image = models.ImageField(upload_to='calendar_image/%Y/%m/%d')
 
     def __str__(self):
         return f'{self.title} - {self.date}'
@@ -21,3 +21,23 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment
+
+
+class Friend(models.Model):
+    # related_name의 default는 related_name='friend_set'이므로 중복되지 않도록  이름을 지어준것
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    current_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner', null=True, on_delete=models.DO_NOTHING)
+
+    @classmethod
+    def make_friend(cls, current_user, new_friend):
+        friend, created = cls.objects.get_or_create(
+            current_user = current_user
+        )
+        friend.users.add(new_friend)
+
+    @classmethod
+    def lose_friend(cls, current_user, new_friend):
+        friend, created = cls.objects.get_or_create(
+            current_user = current_user
+        )
+        friend.users.remove(new_friend)

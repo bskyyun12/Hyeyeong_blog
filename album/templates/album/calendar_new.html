@@ -2,9 +2,22 @@
 
 {% block content %}
 <h1>New Calendar post</h1>
-<form method="POST" class="post-form">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="save btn btn-default">Save</button>
+    {% for field in form %}
+        {{ field.errors }}
+        <label>{{ field.label }}</label>
+        <input  {% if field.label == 'Image' %}
+                type="file"
+                {% elif field.label == 'Date' %}
+                type="date"
+                {% else %}
+                type="{{ field.type }}"
+                {% endif %}
+                placeholder="{{ field.label }}"
+                name="{{ field.name }}" id="{{ field.id }}" class="form-control">
+    {% endfor %}
+    <br>
+    <button type="submit" class="save btn btn-primary">Upload</button>
 </form>
 {% endblock %}
