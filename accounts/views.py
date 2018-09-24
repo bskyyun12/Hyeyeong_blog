@@ -15,8 +15,8 @@ from .forms import (
     UserProfileImageForm
 )
 
-def index(request):
-    return render(request, 'index.html')
+def welcome(request):
+    return render(request, 'welcome.html')
 
 @login_required
 def view_profile(request, pk=None):
@@ -63,49 +63,6 @@ def edit_profile(request):
     args = {'edit_profile_form': edit_profile_form, 'user_profile_image_form': user_profile_image_form}
     return render(request, 'accounts/edit_profile.html', args)
 
-
-#
-# def home(request):
-#     entries = Entry.objects.all() # 모든 게시물 출력
-#     # entries = Entry.objects.filter(author=request.user) # 본인 게시물만 출력
-#     args = {'entries': entries,}
-#     return render(request, 'calendar/home.html', args)
-#
-# def details(request, pk):
-#     entry = get_object_or_404(Entry, pk=pk)
-#     args = {'entry': entry,}
-#     return render(request, 'calendar/details.html', args)
-#
-# def add(request):
-#     if request.method == 'POST':
-#         form = EntryForm(request.POST)
-#         if form.is_valid():
-#             ###
-#             name = form.cleaned_data['name']
-#             date = form.cleaned_data['date']
-#             description = form.cleaned_data['description']
-#
-#             Entry.objects.create(
-#                 author=request.user,
-#                 name=name,
-#                 date=date,
-#                 description=description,
-#             ).save()
-#
-#             return HttpResponseRedirect('/')
-#
-#     else:
-#         form = EntryForm()
-#
-#     args = {'form': form,}
-#     return render(request, 'calendar/form.html', args)
-#
-# def delete(request, pk):
-#     if request.method == 'DELETE':
-#         entry = get_object_or_404(Entry, pk=pk)
-#         entry.delete()
-#
-#     return HttpResponseRedirect('/')
 
 def register(request):
     if request.method =='POST':

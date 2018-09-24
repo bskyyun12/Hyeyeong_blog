@@ -2,7 +2,6 @@
 
 {% block content %}
 <div class="post">
-    <hr>
     {% if user.is_authenticated and user.is_superuser or user == post.author %}
         <!-- 수정버튼 -->
         <a class="btn btn-secondary btn-sm" href="{% url 'album:post_edit' pk=post.pk %}">Edit</a>

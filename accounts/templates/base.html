@@ -1,10 +1,11 @@
 {% load static %}
+
 <html>
 
 <head>
     <title>Hyeyeong's blog</title>
     <link rel="stylesheet" href="{% static 'calendar/css/bootstrap.css' %}" />
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <!-- home gallery frame -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,10 +19,10 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="{% url 'album:home' %}">Hyeyeong's blog ♥</a>
+            {% if user.is_authenticated  %}
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarColor02">
                 <ul class="navbar-nav mr-auto">
                     {% if user.is_superuser %}
@@ -29,27 +30,23 @@
                     <a class="nav-link" href="/admin">Admin <span class="sr-only">(current)</span></a>
                     </li>
                     {% endif %}
-                    {% if user.is_authenticated  %}
+
                     <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'accounts:view_profile' %}">{{ user }}</a>
+                    <a class="nav-link" href="{% url 'accounts:view_profile' %}">My profile</a>
                     </li>
                     <li class="nav-item active">
                     <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
                     </li>
-                    {% else %}
-                    <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
-                    </li>
-                    {% endif %}
                 </ul>
-
             </div>
+            {% endif %}
         </nav>
     </div>
 
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
+            <hr>
                 {% block content %}
                 {% endblock %}
             </div>

@@ -1,13 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="row">
+    <div class="col-sm-6">
+        <h5>Welcome, {{user}}!</h5>
+    </div>
+    <div class="col-sm-6">
+        <button onclick="window.location='{% url 'album:post_new' %}'" type="button" class="btn btn-primary" >New Post</button>
+    </div>
+</div>
 
-<hr>
-<button onclick="window.location='{% url 'album:post_new' %}'" type="button" class="btn btn-primary" >Add Post</button>
 <hr>
 <form class="my-2" action="" method="get">
     <div class="form-inline my-2">
         <input class="form-control mr-sm-2 my-2" placeholder="Title" type="text" name="title">
+        <input class="form-control mr-sm-2 my-2" placeholder="Emoticon" type="text" name="emoticon">
         <input class="form-control mr-sm-2 my-2" type="month" name="year_month" value="">
     </div>
   <button type="submit" class="btn btn-primary my-2">Search</button>
@@ -18,8 +25,13 @@
 
 <h1 class="my-4 text-center">
     <form class="my-2" action="" method="get">
-        {% if title %}
-            Searched by Title : {{title}}
+        {% if title or emoticon %}
+            Searched by
+            {% if title %}
+                Title : {{title}}
+            {% else %}
+                <img src="/media/emoticons/{{ emoticon }}.png" style="width:30;">
+            {% endif %}
         {% elif year_month %}
         <button type="submit" class="btn btn-primary mr-sm-5" name="year_month"  value="{{pre_year_month}}">Back</button>
         {{ year_month|date:"Y. m" }}
@@ -38,32 +50,11 @@
         </a>
         Posted by {{ post.author }}<br>
         title : {{ post.title }}<br>
+        <form class="my-2" method="get">
+            <button type="submit" class="btn btn-light" name="emoticon" value="{{ post.emoticon }}" ><img src="/media/emoticons/{{ post.emoticon }}.png" style="width:30;"><br></button>
+        </form>
     </div>
     {% endfor %}
 </div>
 
-{% endblock %}
-
-
-{% block content_right %}
-<h3>People</h3>
-{% for user in users %}
-    <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
-        <h5>{{ user }}</h5>
-    </a>
-    {% if not user in friends %}
-    <a href="{% url 'album:change_friends' operation='add' pk=user.pk %}">
-        <button type="button" class="btn btn-success">Add Friend</button>
-    </a>
-    {% endif %}
-{% endfor %}
-<h3>Friends</h3>
-{% for friend in friends %}
-    <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}">
-        <h5>{{ friend }}</h5>
-    </a>
-    <a href="{% url 'album:change_friends' operation='remove' pk=friend.pk %}">
-        <button type="button" class="btn btn-default">Remove Friend</button>
-    </a>
-{% endfor %}
 {% endblock %}

@@ -5,25 +5,33 @@
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% for field in form %}
-        {{ field.errors }}
-        {% if field.label == 'Image' and field.value %}
-        <label>{{ field.label }} : {{ field.value }}</label>
-        {% else %}
-        <label>{{ field.label }}</label>
-        {% endif %}
-        <input {% if not field.value %}
-                placeholder="{{ field.label }}"
-                {% endif %}
-                {% if field.label == 'Image' %}
-                type="file" value="{{ field.value }}"
-                {% else %}
-                type="{{ field.type }}" value="{{ field.value }}"
-                {% endif %}
-                name="{{ field.name }}" id="{{ field.id }}" class="form-control">
-    {% endfor %}
 
-    <br>
+    <label>{{ form.title.label }}</label>
+        <input placeholder="{{ form.title.label }}" value="{{ form.title.value }}" name="title" class="form-control">
+    <label>{{ form.description.label }}</label>
+        <input placeholder="{{ form.description.label }}" value="{{ form.description.value }}" name="description" class="form-control">
+    <label>{{ form.image.label }}</label>
+    <div class="custom-file">
+        <input type="file" value="{{ form.image.value }}" name="image" class="custom-file-input" id="inputGroupFile02">
+        <label class="custom-file-label" for="inputGroupFile02">{{ form.image.value }}</label>
+    </div>
+    <label>{{ form.date.label }}{{ form.date.errors }}</label>
+        <input type="date" placeholder="{{ form.date.label }}" value="{{ form.date.value|date:"Y-m-d" }}" name="date" class="form-control">
+
+    <!-- emoticons -->
+    <label>{{ form.emoticon.label }}</label><br>
+    <div class="form-group form-inline">
+        <div class="custom-control custom-radio">
+            <input type="radio" id="customRadio1" name="emoticon" class="custom-control-input" {% if form.emoticon.value == 'happy' %} checked {% endif %} value="happy">
+            <label class="custom-control-label" for="customRadio1"><img src="/media/emoticons/happy.png" style="width:50;"> Happy</label>
+        </div>
+        <div class="custom-control custom-radio">
+            <input type="radio" id="customRadio2" name="emoticon" class="custom-control-input" {% if form.emoticon.value == 'sleepy' %} checked {% endif %} value="sleepy">
+            <label class="custom-control-label" for="customRadio2"><img src="/media/emoticons/sleepy.png" style="width:50;"> Sleepy</label>
+        </div>
+    </div>
+
+    <hr>
     <button type="submit" name="button" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %}

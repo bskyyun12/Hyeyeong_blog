@@ -125,9 +125,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mysite/media')
 
 AUTH_USER_MODEL = 'accounts.User'
 
-LOGIN_URL = '/account/'
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/album/'
-LOGOUT_REDIRECT_URL = '/account/'
+LOGOUT_REDIRECT_URL = '/'
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', cast=bool)

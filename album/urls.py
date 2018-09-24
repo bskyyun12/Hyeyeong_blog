@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from album.views import (
     PostDetailView,
-    CalendarView
+    CalendarView,
 )
 from django_filters.views import FilterView
 from .filters import CalendarFilter
@@ -23,4 +23,6 @@ urlpatterns = [
     # path('entry/<int:pk>', views.details, name='details'),
     # path('entry/add', views.add, name='add'),
     # path('entry/delete/<int:pk>', views.delete, name='delete'),
+
+
 ]

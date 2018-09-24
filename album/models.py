@@ -8,10 +8,11 @@ class Calendar(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     date = models.DateField()
-    image = models.ImageField(upload_to='calendar_image/%Y/%m/%d')
+    image = models.ImageField(upload_to='calendar_image/%Y/%m')
+    emoticon = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'{self.title} - {self.date}'
+        return self.title
 
 class Comment(models.Model):
     post = models.ForeignKey('album.Calendar', related_name='comments', on_delete=models.CASCADE)
@@ -20,8 +21,7 @@ class Comment(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.comment
-
+        return f'{self.post} - {self.comment}'
 
 class Friend(models.Model):
     # related_name의 default는 related_name='friend_set'이므로 중복되지 않도록  이름을 지어준것

@@ -7,7 +7,7 @@ from accounts import views
 # from album.views import CalendarView
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.welcome, name='welcome'),
     # path('', CalendarView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('account/', include(('accounts.urls', 'accounts'), namespace='accounts')),

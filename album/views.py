@@ -20,17 +20,22 @@ class CalendarView(TemplateView):
         posts = Calendar.objects.all().order_by('-date')
         # posts = Calendar.objects.filter(date__year=current_year, date__month=current_month).order_by('date')
 
+
         title = request.GET.get('title', '')
         year_month_str = request.GET.get('year_month', '')
-
-
+        emoticon = request.GET.get('emoticon', '')
 
         if title and year_month_str or year_month_str:
             year_month = datetime.strptime(year_month_str, "%Y-%m").date()
             posts = posts.filter(date__year=year_month.year, date__month=year_month.month)
+
+        elif year_month_str and emoticon or emoticon:
+            year_month = datetime.strptime((str(current_year) +"-"+ str(current_month)), "%Y-%m").date()
+            posts = posts.filter(emoticon__contains=emoticon)
+
         elif title:
             year_month = datetime.strptime((str(current_year) +"-"+ str(current_month)), "%Y-%m").date()
-            posts = posts.filter(title=title)
+            posts = posts.filter(title__contains=title)
         # elif year_month_str:
         #     year_month = datetime.strptime(year_month_str, "%Y-%m").date()
         #     posts = posts.filter(date__year=year_month.year, date__month=year_month.month)
@@ -69,11 +74,13 @@ class CalendarView(TemplateView):
         friend, created = Friend.objects.get_or_create(current_user=request.user)
         friends = friend.users.all()
 
+
         args = {
             'year_month': year_month,
             'next_year_month': next_year_month,
             'pre_year_month': pre_year_month,
             'title': title,
+            'emoticon': emoticon,
             'posts': posts,
             'users': users,
             'friends': friends,
@@ -83,41 +90,16 @@ class CalendarView(TemplateView):
     def post(self, request):
         return render(request, self.template_name)
 
-# class FilterView(TemplateView):
-#     template_name = 'album/home.html'
-#
-#     def get(self, request):
-#         posts = Calendar.objects.order_by('-date')
-#         calendar_filter = CalendarFilter(request.GET, queryset=posts)
-#
-#         # 현재 로그한 유저는 유저목록에서 제외시켜 출력하기 위해
-#         users = User.objects.all()
-#         # friend = Friend.objects.get(current_user=request.user) => need to create
-#         friend, created = Friend.objects.get_or_create(current_user=request.user)
-#         friends = friend.users.all()
-#
-#         args = {
-#             'users': users,
-#             'friends': friends,
-#             'filter': calendar_filter,
-#         }
-#         return render(request, self.template_name, args)
-#
-#     def post(self, request):
-#         return render(request, self.template_name)
-
-
-
 @login_required
 def post_new(request):
     if request.method == 'POST':
         form = CalendarForm(request.POST, request.FILES)
         if form.is_valid():
-            ###
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
             date = form.cleaned_data['date']
             image = form.cleaned_data['image']
+            emoticon = form.cleaned_data['emoticon']
 
             Calendar.objects.create(
                 author=request.user,
@@ -125,6 +107,7 @@ def post_new(request):
                 description=description,
                 date=date,
                 image=image,
+                emoticon=emoticon,
             ).save()
 
             return redirect('album:home')
@@ -132,36 +115,11 @@ def post_new(request):
     else:
         form = CalendarForm()
 
-    args = {'form': form,}
+    args = {
+        'form': form,
+        'today':datetime.now(),
+    }
     return render(request, 'album/calendar_new.html', args)
-
-# 이미지 업로드 작업하기전 백업..
-# @login_required
-# def post_new(request):
-#     if request.method == 'POST':
-#         form = CalendarForm(request.POST)
-#         if form.is_valid():
-#             ###
-#             title = form.cleaned_data['title']
-#             description = form.cleaned_data['description']
-#             date = form.cleaned_data['date']
-#             image = form.cleaned_data['image']
-#
-#             Calendar.objects.create(
-#                 author=request.user,
-#                 title=title,
-#                 description=description,
-#                 date=date,
-#                 image=image,
-#             ).save()
-#
-#             return redirect('album:home')
-#
-#     else:
-#         form = CalendarForm()
-#
-#     args = {'form': form,}
-#     return render(request, 'album/calendar_new.html', args)
 
 @login_required
 def post_edit(request, pk):

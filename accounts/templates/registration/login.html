@@ -1,21 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-center container">
-    <h1>Login</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {% if form.errors %}
-        <ul class="errorlist nonfield">
-            <li>Please enter a correct email and password. Note that both fields may be case-sensitive.
-            </li>
-        </ul>
-        {% endif %}
-        {% for field in form %}
-            <input type="{% if field.label == 'Password' %}password{% else %}input{% endif %}" placeholder="{{ field.label }}" name="{{ field.name }}" class="form-control">
-            <p></p>
-        {% endfor %}
-        <button type="submit" name="button" class="btn btn-primary">Login</button>
-        <p>Not registered, yet? <a href="{% url 'accounts:register' %}">Signup!</a></p>
-    </form>
+<div class="col-sm-6">
+    <div class="container">
+        <h1>Login</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {% if form.errors %}
+            <ul class="errorlist nonfield">
+                <li>Please enter a correct email and password. Note that both fields may be case-sensitive.
+                </li>
+            </ul>
+            {% endif %}
+            {% for field in form %}
+                <input type="{% if field.label == 'Password' %}password{% else %}input{% endif %}" placeholder="{{ field.label }}" name="{{ field.name }}" class="form-control">
+                <p></p>
+            {% endfor %}
+            <button type="submit" name="button" class="btn btn-primary">Login</button>
+            <p>Not registered, yet? <a href="{% url 'accounts:register' %}">Signup!</a></p>
+        </form>
+    </div>
 </div>
 {% endblock %}
