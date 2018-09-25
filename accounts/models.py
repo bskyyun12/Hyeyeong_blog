@@ -3,6 +3,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
+from imagekit.models import ImageSpecField
+from imagekit.processors import Resize
 
 # class Entry(models.Model):
 #     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -81,6 +83,11 @@ class UserProfile(models.Model):
     website = models.URLField(blank=True, default='')
     phone = models.CharField(blank=True, max_length=20, default='')
     image = models.ImageField(upload_to='profile_image', blank=True, default='profile_image/framed-portrait128.png')
+    image_thumbnail = ImageSpecField(
+		source = 'image',
+		processors = [Resize(700, 700)], # 처리할 작업 목룍
+		format = 'JPEG',					# 최종 저장 포맷
+		options = {'quality': 60})  		# 저장 옵션
 
     # Sodra_Sandby가 도시인 유저만 보이게 하고싶을때
     # Sodra_Sandby = UserProfileManager()

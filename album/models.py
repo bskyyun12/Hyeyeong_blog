@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 # Create your models here.
 class Calendar(models.Model):
@@ -10,6 +12,12 @@ class Calendar(models.Model):
     date = models.DateField()
     image = models.ImageField(upload_to='calendar_image/%Y/%m')
     emoticon = models.CharField(max_length=100)
+    image_thumbnail = ImageSpecField(
+		source = 'image',
+		processors = [ResizeToFill(700, 700)], # 처리할 작업 목룍
+		format = 'JPEG',					# 최종 저장 포맷
+		options = {'quality': 60})  		# 저장 옵션
+
 
     def __str__(self):
         return self.title

@@ -10,11 +10,9 @@
     {% endif %}
 
     <h1>title : {{ post.title }}</h1>
-    <a href="{% url 'album:post_detail' pk=post.pk %}" class="d-block mb-2">
     <h2>{{ post.date|date:"Y.m.d" }}</h2>
-    {% if post.image %}
+    <a href="{{ post.image.url }}" class="d-block mb-2">
         <img class="img-fluid img-thumbnail w3-round-xlarge" src="{{ post.image.url }}"/>
-    {% endif %}
     </a>
     <p>description : {{ post.description }}</p>
     <p>author : {{ post.author }}</p>
@@ -38,8 +36,8 @@
     </div>
         {% for user in users %}
             {% if user.email == comment.author %}
-            <img class="comment rounded-circle" src="{{ user.userprofile.image.url }}" width="62"/>
             <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+            <img class="comment rounded-circle" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
                 <strong> {{ comment.author }}</strong>
             </a> : {{ comment.comment }}
             {% endif %}
