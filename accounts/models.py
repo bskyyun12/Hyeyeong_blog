@@ -82,7 +82,7 @@ class UserProfile(models.Model):
     city = models.CharField(blank=True, max_length=100, default='')
     website = models.URLField(blank=True, default='')
     phone = models.CharField(blank=True, max_length=20, default='')
-    image = models.ImageField(upload_to='profile_image', blank=True, default='profile_image/framed-portrait128.png')
+    image = models.ImageField(upload_to='profile_image', blank=True, default='profile_image/flower.png')
     image_thumbnail = ImageSpecField(
 		source = 'image',
 		processors = [Resize(700, 700)], # 처리할 작업 목룍

@@ -38,7 +38,11 @@
             {% if user.email == comment.author %}
             <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
             <img class="comment rounded-circle" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
-                <strong> {{ comment.author }}</strong>
+                {% if user.first_name %}
+                    <strong> {{ user.first_name }}</strong>
+                {% else %}
+                    <strong> {{ comment.author }}</strong>
+                {% endif %}
             </a> : {{ comment.comment }}
             {% endif %}
         {% endfor %}

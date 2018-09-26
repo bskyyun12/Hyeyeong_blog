@@ -16,7 +16,22 @@ from .forms import (
 )
 
 def welcome(request):
-    return render(request, 'welcome.html')
+    if request.method =='POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            ######### this makes users automatically log in when they successfully register
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password1']
+            user = authenticate(email=email, password=password)
+            login(request, user)
+            ##########
+            return redirect(reverse('album:home'))
+    else:
+        form = RegistrationForm()
+
+    args = {'form': form}
+    return render(request, 'welcome.html', args)
 
 @login_required
 def view_profile(request, pk=None):
@@ -63,24 +78,25 @@ def edit_profile(request):
     args = {'edit_profile_form': edit_profile_form, 'user_profile_image_form': user_profile_image_form}
     return render(request, 'accounts/edit_profile.html', args)
 
-
-def register(request):
-    if request.method =='POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            ######### this makes users automatically log in when they successfully register
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password1']
-            user = authenticate(email=email, password=password)
-            login(request, user)
-            ##########
-            return redirect(reverse('album:home'))
-    else:
-        form = RegistrationForm()
-
-    args = {'form': form}
-    return render(request, 'registration/reg_form.html', args)
+# Moved to welcome page
+#
+# def register(request):
+#     if request.method =='POST':
+#         form = RegistrationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             ######### this makes users automatically log in when they successfully register
+#             email = form.cleaned_data['email']
+#             password = form.cleaned_data['password1']
+#             user = authenticate(email=email, password=password)
+#             login(request, user)
+#             ##########
+#             return redirect(reverse('album:home'))
+#     else:
+#         form = RegistrationForm()
+#
+#     args = {'form': form}
+#     return render(request, 'registration/reg_form.html', args)
 
 @login_required
 def change_password(request):

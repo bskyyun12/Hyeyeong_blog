@@ -1,3 +1,46 @@
+/* Welcome page css */
+.intro-2 {
+    background: url("http://mdbootstrap.com/img/Photos/Others/img%20(42).jpg")no-repeat center center;
+    background-size: cover;
+}
+
+.intro-base {
+    background-size: cover;
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+}
+
+.hm-gradient .full-bg-img {
+    background: -webkit-linear-gradient(45deg, rgba(83, 125, 210, 0.4), rgba(178, 30, 123, 0.4) 100%);
+    background: -webkit-gradient(linear, 45deg, from(rgba(29, 236, 197, 0.4)), to(rgba(96, 0, 136, 0.4)));
+    background: linear-gradient(to 45deg, rgba(29, 236, 197, 0.4), rgba(96, 0, 136, 0.4) 100%);
+}
+.card {
+    background-color: rgba(229, 228, 255, 0.2);
+}
+
+ .md-form .prefix {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+}
+.md-form label {
+    color: #ffffff;
+}
+h6 {
+    line-height: 1.7;
+}
+@media (max-width: 740px) {
+    .full-height,
+    .full-height body,
+    .full-height header,
+    .full-height header .view {
+        height: 1040px;
+    }
+}
+/* Welcome page css */
+
+
+
+/* Calendar list css */
 .hovereffect {
   width: 100%;
   height: auto;
@@ -78,3 +121,4 @@
   -webkit-transform: translate3d(0,0,0);
   transform: translate3d(0,0,0);
 }
+/* Calendar list css */

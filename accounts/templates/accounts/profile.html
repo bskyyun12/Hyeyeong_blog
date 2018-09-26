@@ -2,7 +2,12 @@
 
 {% block content %}
 <div class="container">
-    <h1>My Profile</h1>
+    {% if user.first_name %}
+        <h3>{{ user.first_name }}
+    {% else %}
+        <h3>{{ user }}
+    {% endif %}
+        's Profile</h3>
     <hr>
     <p>Email: {{ user.email }}</p>
     <p>First name: {{ user.first_name }}</p>
@@ -12,24 +17,9 @@
     <p>Website: {{ user.userprofile.website }}</p>
     <p>Phone: {{ user.userprofile.phone }}</p>
     {% if user.userprofile.image %}
-        <div>
-            <a href="{{ user.userprofile.image.url }}">
-            <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
-            </a>
-            {% if user.userprofile.image.url == "/media/profile_image/framed-portrait128.png" %}
-                <span class="badge badge-light">
-                    Icons made by
-                    <a href="https://www.flaticon.com/authors/google" title="Google">Google</a>
-                    from
-                    <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-                    is licensed by
-                    <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">
-                        CC 3.0 BY
-                    </a>
-                </span>
-            {% endif %}
-            <br>
-        </div>
+        <a href="{{ user.userprofile.image.url }}">
+        <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
+        </a>
     {% endif %}
 
     {% if user == request.user %}
