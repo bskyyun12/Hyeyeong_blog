@@ -4,12 +4,9 @@ from album.views import (
     PostDetailView,
     CalendarView,
 )
-from django_filters.views import FilterView
-from .filters import CalendarFilter
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    # path('', login_required(FilterView.as_view(filterset_class = CalendarFilter, template_name='album/home.html')), name='home'),
     path('', login_required(CalendarView.as_view()), name='home'),
     path('post/new/', views.post_new, name='post_new'),
     path('post/<int:pk>/', login_required(PostDetailView.as_view()), name='post_detail'),
@@ -19,7 +16,8 @@ urlpatterns = [
     # friend
     path('connect/<str:operation>/<int:pk>/', views.change_friends, name='change_friends'),
 
-    path('comment/<int:pk>)/remove/', views.comment_remove, name='comment_remove'),
+    path('image/<int:pk>/remove/', views.image_remove, name='image_remove'),
+    path('comment/<int:pk>/remove/', views.comment_remove, name='comment_remove'),
     # path('entry/<int:pk>', views.details, name='details'),
     # path('entry/add', views.add, name='add'),
     # path('entry/delete/<int:pk>', views.delete, name='delete'),

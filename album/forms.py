@@ -1,5 +1,5 @@
 from django import forms
-from .models import Calendar, Comment
+from .models import Calendar, Image, Comment
 
 class CalendarForm(forms.ModelForm):
 
@@ -8,7 +8,6 @@ class CalendarForm(forms.ModelForm):
         fields = (
             'title',
             'description',
-            'image',
             'date',
             'emoticon'
         )

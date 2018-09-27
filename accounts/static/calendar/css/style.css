@@ -6,7 +6,7 @@
 
 .intro-base {
     background-size: cover;
-    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    background-image: linear-gradient(to top, #fed6e3 0%, #cce9e8 100%);
 }
 
 .hm-gradient .full-bg-img {

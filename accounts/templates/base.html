@@ -1,77 +1,73 @@
 {% load static %}
 
 <html>
+    <head>
+        <title>Hyeyeong's blog</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+        <!-- bootstrap Minty theme -->
+        <link rel="stylesheet" href="{% static 'calendar/css/bootstrap.css' %}" />
+        <!-- style.css -->
+        <link rel="stylesheet" href="{% static 'calendar/css/style.css' %}" />
+    </head>
+    <body>
+        <br>
+        <div class="view intro-base">
+            <div class="full-bg-img spring-warmth-gradient">
+                <div class="container">
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                        <a class="navbar-brand" href="{% url 'album:home' %}">Hyeyeong's blog ♥</a>
+                        {% if user.is_authenticated %}
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarColor02">
+                            <ul class="navbar-nav mr-auto">
+                                {% if user.is_superuser %}
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="/admin">Admin <span class="sr-only">(current)</span></a>
+                                </li>
+                                {% endif %}
 
-<head>
-    <title>Hyeyeong's blog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
-    <!-- bootstrap Minty theme -->
-    <link rel="stylesheet" href="{% static 'calendar/css/bootstrap.css' %}" />
-    <!-- style.css -->
-    <link rel="stylesheet" href="{% static 'calendar/css/style.css' %}" />
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="{% url 'accounts:view_profile' %}">My profile</a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </nav>
+                </div>
 
-</head>
-
-    {% block script %}
-    {% endblock %}
-
-<body>
-    <br>
-    <div class="view intro-base">
-        <div class="full-bg-img spring-warmth-gradient">
-            <div class="container">
-                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                    <a class="navbar-brand" href="{% url 'album:home' %}">Hyeyeong's blog ♥</a>
-                    {% if user.is_authenticated  %}
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarColor02">
-                        <ul class="navbar-nav mr-auto">
-                            {% if user.is_superuser %}
-                            <li class="nav-item active">
-                            <a class="nav-link" href="/admin">Admin <span class="sr-only">(current)</span></a>
-                            </li>
-                            {% endif %}
-
-                            <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'accounts:view_profile' %}">My profile</a>
-                            </li>
-                            <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
-                            </li>
-                        </ul>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <hr>
+                            {% block content %}
+                            {% endblock %}
+                        </div>
+                        <!-- <div class="col-sm-3">
+                            {% block content_right %}
+                            {% endblock %}
+                        </div> -->
                     </div>
-                    {% endif %}
-                </nav>
-            </div>
-
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12">
-                    <hr>
-                        {% block content %}
-                        {% endblock %}
-                    </div>
-                    <!-- <div class="col-sm-3">
-                        {% block content_right %}
-                        {% endblock %}
-                    </div> -->
                 </div>
             </div>
         </div>
-    </div>
 
-</body>
-<!-- JQuery (Bootstrap보다 위에 넣어야함!!) -->
-<script type="text/javascript" src="{% static 'calendar/js/jquery-3.3.1.min.js' %}"></script>
-<!-- Tooltips -->
-<script type="text/javascript" src="{% static 'calendar/js/popper.min.js' %}"></script>
-<!-- Bootstrap core JavaScript -->
-<script type="text/javascript" src="{% static 'calendar/js/bootstrap.min.js' %}"></script>
-<!-- MDB core JavaScript -->
-<script type="text/javascript" src="{% static 'calendar/js/mdb.min.js' %}"></script>
+        <!-- JQuery (Bootstrap보다 위에 넣어야함!!) -->
+        <script type="text/javascript" src="{% static 'calendar/js/jquery-3.3.1.min.js' %}"></script>
+        {% block jquery_script %}
+        {% endblock %}
+        <!-- Tooltips -->
+        <script type="text/javascript" src="{% static 'calendar/js/popper.min.js' %}"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="{% static 'calendar/js/bootstrap.min.js' %}"></script>
+        <!-- MDB core JavaScript - Welcome page -->
+        <script type="text/javascript" src="{% static 'calendar/js/mdb.min.js' %}"></script>
 
+    </body>
 </html>

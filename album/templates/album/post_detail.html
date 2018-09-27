@@ -11,9 +11,11 @@
 
     <h1>title : {{ post.title }}</h1>
     <h2>{{ post.date|date:"Y.m.d" }}</h2>
-    <a href="{{ post.image.url }}" class="d-block mb-2">
-        <img class="img-fluid img-thumbnail w3-round-xlarge" src="{{ post.image.url }}"/>
-    </a>
+    {% for image in post.images.all %}
+        <a href="{{ image.image.url }}" class="d-block mb-2">
+            <img class="img-fluid img-thumbnail w3-round-xlarge" src="{{ image.image.url }}"/>
+        </a>
+    {% endfor %}
     <p>description : {{ post.description }}</p>
     <p>author : {{ post.author }}</p>
     <br><br>

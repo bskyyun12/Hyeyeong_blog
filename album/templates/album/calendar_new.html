@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <h1>New Calendar post</h1>
@@ -6,16 +7,18 @@
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <label>{{ form.title.label }}</label>
-        <input placeholder="{{  form.title.label  }}" name="title" class="form-control">
-    <label>{{ form.description.label }}</label>
-        <input placeholder="{{ form.description.label }}" name="description" class="form-control">
-    <label>{{ form.image.label }}</label>
+    <label>Pictures</label>
         <div class="custom-file">
-            <input type="file" name="image" class="custom-file-input" id="inputGroupFile02">
-            <label class="custom-file-label" for="inputGroupFile02">Upload {{ form.image.label }}</label>
+            <input id="fileupload" type="file" name="image" multiple onchange="javascript:updateList()" class="custom-file-input" accept="image/*">
+            <label class="custom-file-label" for="inputGroupFile02">Upload Pictures</label>
         </div>
-    <label>{{ form.date.label }}</label>
+        <div id="fileList"></div>
+
+    <label>{{ form.title.label }}{{ form.title.errors }}</label>
+        <input placeholder="{{  form.title.label  }}" name="title" class="form-control">
+    <label>{{ form.description.label }}{{ form.description.errors }}</label>
+        <input placeholder="{{ form.description.label }}" name="description" class="form-control">
+    <label>{{ form.date.label }}{{ form.date.errors }}</label>
         <input type="date" placeholder="{{ form.date.label }}" value="{{ today|date:"Y-m-d" }}" name="date" class="form-control">
 
 
@@ -40,4 +43,22 @@
     <hr>
     <button type="submit" class="save btn btn-primary">Upload</button>
 </form>
+
+{% endblock %}
+
+{% block jquery_script %}
+<!-- Displays selected files -->
+<script type="text/javascript">
+updateList = function() {
+    var input = document.getElementById('fileupload');
+    var output = document.getElementById('fileList');
+
+    htmlStr = 'Selected files:<ul>';
+    for (var i = 0; i < input.files.length; ++i) {
+        htmlStr += '<li>' + input.files.item(i).name + '</li>';
+    }
+    htmlStr += '</ul>';
+    output.innerHTML = htmlStr
+}
+</script>
 {% endblock %}

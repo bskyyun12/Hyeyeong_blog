@@ -6,15 +6,30 @@
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
+    Current image(s):
+    <ul>
+        {% for image in images %}
+            <li>
+                {{ image.image }}
+                <a class="text-danger" href="{% url 'album:image_remove' pk=image.pk %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <label>Pictures</label>
+    <div class="custom-file">
+        <input id="fileupload" type="file" name="image" multiple onchange="javascript:updateList()" class="custom-file-input" accept="image/*">
+        <label class="custom-file-label" for="inputGroupFile02">Add more pictures</label>
+    </div>
+    <div id="fileList">
+
+    </div>
+
+
     <label>{{ form.title.label }}</label>
         <input placeholder="{{ form.title.label }}" value="{{ form.title.value }}" name="title" class="form-control">
     <label>{{ form.description.label }}</label>
         <input placeholder="{{ form.description.label }}" value="{{ form.description.value }}" name="description" class="form-control">
-    <label>{{ form.image.label }}</label>
-    <div class="custom-file">
-        <input type="file" value="{{ form.image.value }}" name="image" class="custom-file-input" id="inputGroupFile02">
-        <label class="custom-file-label" for="inputGroupFile02">{{ form.image.value }}</label>
-    </div>
+    <label>{{ image_form.image.label }}</label
     <label>{{ form.date.label }}{{ form.date.errors }}</label>
         <input type="date" placeholder="{{ form.date.label }}" value="{{ form.date.value|date:"Y-m-d" }}" name="date" class="form-control">
 
@@ -38,4 +53,21 @@
     <hr>
     <button type="submit" name="button" class="btn btn-primary">Submit</button>
 </form>
+{% endblock %}
+
+{% block jquery_script %}
+<!-- Displays selected files -->
+<script type="text/javascript">
+updateList = function() {
+    var input = document.getElementById('fileupload');
+    var output = document.getElementById('fileList');
+
+    htmlStr = 'Selected files:<ul>';
+    for (var i = 0; i < input.files.length; ++i) {
+        htmlStr += '<li>' + input.files.item(i).name + '</li>';
+    }
+    htmlStr += '</ul>';
+    output.innerHTML = htmlStr
+}
+</script>
 {% endblock %}

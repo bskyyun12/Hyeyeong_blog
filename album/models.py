@@ -10,17 +10,22 @@ class Calendar(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     date = models.DateField()
-    image = models.ImageField(upload_to='calendar_image/%Y/%m')
     emoticon = models.CharField(max_length=100)
-    image_thumbnail = ImageSpecField(
+
+    def __str__(self):
+        return self.title
+
+class Image(models.Model):
+    post = models.ForeignKey('album.Calendar', related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='calendar_image/%Y/%m')
+    thumbnail = ImageSpecField(
 		source = 'image',
 		processors = [ResizeToFill(700, 700)], # 처리할 작업 목룍
 		format = 'JPEG',					# 최종 저장 포맷
 		options = {'quality': 60})  		# 저장 옵션
 
-
     def __str__(self):
-        return self.title
+        return f'image in {self.post}'
 
 class Comment(models.Model):
     post = models.ForeignKey('album.Calendar', related_name='comments', on_delete=models.CASCADE)

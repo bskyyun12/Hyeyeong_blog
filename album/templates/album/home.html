@@ -46,7 +46,11 @@
         <h3 class="card-header">{{ post.date|date:"Y.m.d" }}</h3>
         <div class="hovereffect card-body">
             <!-- <img class="img-thumbnail w3-round-xlarge img-responsive" style="width: 100%; display: block;" src="{{ post.image.url }}" alt="Card image"> -->
-            <img class="img-thumbnail w3-round-xlarge img-responsive" style="width: 100%; display: block;" src="{{ post.image_thumbnail.url }}" alt="Card image">
+            {% for thumb in post.images.all %}
+                {% if forloop.counter == 1 %}
+                <img class="img-thumbnail w3-round-xlarge img-responsive" style="width: 100%; display: block;" src="{{ thumb.thumbnail.url }}" alt="Card image">
+                {% endif %}
+            {% endfor %}
             <a href="{% url 'album:post_detail' pk=post.pk %}">
                 <div class="overlay">
                    <h2>Title : {{ post.title }}</h2>
@@ -54,6 +58,7 @@
                 </div>
             </a>
         </div>
+
         <form method="get">
             <button type="submit" class="btn btn-primary btn-sm" name="emoticon" value="{{ post.emoticon }}" >
                 <img src="/media/emoticons/{{ post.emoticon }}.png" style="width:35;">
@@ -64,5 +69,26 @@
 
 </div>
 
+<script type="text/javascript">
+    $(function () {
+      /* 1. OPEN THE FILE EXPLORER WINDOW */
+      $(".js-upload-photos").click(function () {
+        $("#fileupload").click();
+      });
+
+      /* 2. INITIALIZE THE FILE UPLOAD COMPONENT */
+      $("#fileupload").fileupload({
+        dataType: 'json',
+        done: function (e, data) {  /* 3. PROCESS THE RESPONSE FROM THE SERVER */
+          if (data.result.is_valid) {
+            $("#gallery tbody").prepend(
+              "<tr><td><a href='" + data.result.url + "'>" + data.result.name + "</a></td></tr>"
+            )
+          }
+        }
+      });
+
+    });
+</script>
 
 {% endblock %}

@@ -1,14 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Calendar, Comment, Friend
+from .models import Calendar, Image, Comment, Friend
 from accounts.models import User
 from django.utils import timezone
 from datetime import datetime
 from django.views.generic import TemplateView
-from .filters import CalendarFilter
 from django.contrib.auth.decorators import login_required
 from .forms import (
     CalendarForm,
-    CommentForm
+    CommentForm,
 )
 
 class CalendarView(TemplateView):
@@ -18,6 +17,7 @@ class CalendarView(TemplateView):
         current_year = datetime.today().year
         current_month = datetime.today().month
         posts = Calendar.objects.all().order_by('-date')
+        thumbnail = Image.objects.all()
         # posts = Calendar.objects.filter(date__year=current_year, date__month=current_month).order_by('date')
 
 
@@ -82,6 +82,7 @@ class CalendarView(TemplateView):
             'title': title,
             'emoticon': emoticon,
             'posts': posts,
+            'thumbnail': thumbnail,
             'users': users,
             'friends': friends,
         }
@@ -92,26 +93,37 @@ class CalendarView(TemplateView):
 
 @login_required
 def post_new(request):
-    if request.method == 'POST':
-        form = CalendarForm(request.POST, request.FILES)
-        if form.is_valid():
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
-            date = form.cleaned_data['date']
-            image = form.cleaned_data['image']
-            emoticon = form.cleaned_data['emoticon']
 
-            Calendar.objects.create(
-                author=request.user,
-                title=title,
-                description=description,
-                date=date,
-                image=image,
-                emoticon=emoticon,
-            ).save()
+    if request.method == 'POST':
+        form = CalendarForm(request.POST)
+
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+
+            for img in request.FILES.getlist('image'):
+                Image.objects.create(
+                    post=post,
+                    image=img
+                ).save()
+
+            # title = form.cleaned_data['title']
+            # description = form.cleaned_data['description']
+            # date = form.cleaned_data['date']
+            # image = form.cleaned_data['image']
+            # emoticon = form.cleaned_data['emoticon']
+            #
+            # Calendar.objects.create(
+            #     author=request.user,
+            #     title=title,
+            #     description=description,
+            #     date=date,
+            #     image=image,
+            #     emoticon=emoticon,
+            # ).save()
 
             return redirect('album:home')
-
     else:
         form = CalendarForm()
 
@@ -124,16 +136,37 @@ def post_new(request):
 @login_required
 def post_edit(request, pk):
     post = get_object_or_404(Calendar, pk=pk)
+    images = Image.objects.filter(post=post)
+
     if request.method == "POST":
-        form = CalendarForm(request.POST, request.FILES, instance=post)
+        form = CalendarForm(request.POST, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.save()
+
+            for img in request.FILES.getlist('image'):
+                Image.objects.create(
+                    post=post,
+                    image=img
+                ).save()
+
+
+            # image = image_form.save(commit=False)
+            # for img in request.FILES.getlist('image'):
+            #     Image.objects.create(
+            #         post=post,
+            #         image=img
+            #     ).save()
+
             return redirect('album:post_detail', pk=post.pk)
     else:
         form = CalendarForm(instance=post)
-    return render(request, 'album/post_edit.html', {'form': form})
+    args = {
+        'form': form,
+        'images': images,
+    }
+    return render(request, 'album/post_edit.html', args)
 
 @login_required
 def post_remove(request, pk):
@@ -166,6 +199,12 @@ class PostDetailView(TemplateView):
 
         args =  {'form': form, 'text': text, 'post': post_pk}
         return render(request, self.template_name, args)
+
+@login_required
+def image_remove(request, pk):
+    image = get_object_or_404(Image, pk=pk)
+    image.delete()
+    return redirect('album:post_edit', pk=image.post.pk)
 
 @login_required
 def comment_remove(request, pk):
