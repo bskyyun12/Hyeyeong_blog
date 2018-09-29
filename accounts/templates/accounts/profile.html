@@ -18,10 +18,11 @@
     <p>Phone: {{ user.userprofile.phone }}</p>
     {% if user.userprofile.image %}
         <a href="{{ user.userprofile.image.url }}">
-        <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
+            <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
         </a>
     {% endif %}
 
+    <hr>
     {% if user == request.user %}
     <button onclick="window.location='{% url 'accounts:edit_profile' %}'" class="btn btn-primary my-2">Edit profile</button>
     <button onclick="window.location='{% url 'accounts:change_password' %}'" class="btn btn-primary my-2">Change Password</button>
@@ -40,5 +41,6 @@
         {% endfor %}
         {% endif %}
     {% endif %}
+    <hr>
 </div>
 {% endblock %}

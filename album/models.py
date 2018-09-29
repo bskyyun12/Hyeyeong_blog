@@ -15,8 +15,20 @@ class Calendar(models.Model):
     def __str__(self):
         return self.title
 
+# Calendar comment
+class Comment(models.Model):
+    post = models.ForeignKey('album.Calendar', related_name='comments', on_delete=models.CASCADE)
+    author = models.CharField(max_length=100)
+    comment = models.CharField(max_length=200)
+    created_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.post} - {self.comment}'
+
+# Calendar images
 class Image(models.Model):
     post = models.ForeignKey('album.Calendar', related_name='images', on_delete=models.CASCADE)
+    description = models.TextField(null=True)
     image = models.ImageField(upload_to='calendar_image/%Y/%m')
     thumbnail = ImageSpecField(
 		source = 'image',
@@ -27,14 +39,15 @@ class Image(models.Model):
     def __str__(self):
         return f'image in {self.post}'
 
-class Comment(models.Model):
-    post = models.ForeignKey('album.Calendar', related_name='comments', on_delete=models.CASCADE)
-    author = models.CharField(max_length=200)
-    comment = models.CharField(max_length=100)
+# Calendar comment
+class ImageComment(models.Model):
+    image = models.ForeignKey('album.Image', related_name='image_comments', on_delete=models.CASCADE)
+    author = models.CharField(max_length=100)
+    comment = models.CharField(max_length=200)
     created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f'{self.post} - {self.comment}'
+        return f'{self.image} - {self.comment}'
 
 class Friend(models.Model):
     # related_name의 default는 related_name='friend_set'이므로 중복되지 않도록  이름을 지어준것

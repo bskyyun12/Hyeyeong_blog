@@ -13,116 +13,163 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'calendar/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'calendar/css/bootstrap.css' %}" rel="stylesheet">
     <!-- Material Design Bootstrap -->
     <link href="{% static 'calendar/css/mdb.min.css' %}" rel="stylesheet">
     <!-- style.css -->
     <link href="{% static 'calendar/css/style.css' %}" rel="stylesheet">
+
+    <style media="screen">
+    html,
+    body,
+    header,
+    .view {
+      height: 100%;
+    }
+
+    @media (max-width: 740px) {
+      html,
+      body,
+      header,
+      .view {
+        height: 1000px;
+      }
+    }
+    @media (min-width: 800px) and (max-width: 850px) {
+      html,
+      body,
+      header,
+      .view {
+        height: 650px;
+      }
+    }
+
+    .intro-welcome {
+        background: url("http://mdbootstrap.com/img/Photos/Others/img%20(42).jpg")no-repeat center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .rgba-gradient {
+        background: -webkit-linear-gradient(45deg, rgba(83, 125, 210, 0.4), rgba(178, 30, 123, 0.4) 100%);
+        background: -webkit-gradient(linear, 45deg, from(rgba(29, 236, 197, 0.4)), to(rgba(96, 0, 136, 0.4)));
+        background: linear-gradient(to 45deg, rgba(29, 236, 197, 0.4), rgba(96, 0, 136, 0.4) 100%);
+    }
+
+    .animation {
+        visibility: visible;
+        animation-name: fadeInLeft;
+        animation-delay: 0.3s;
+    }
+
+    .card {
+      background-color: rgba(126, 123, 215, 0.2);
+    }
+
+    .md-form label {
+      color: #ffffff;
+    }
+
+    h6 {
+      line-height: 1.7;
+    }
+    </style>
 </head>
 
 <body>
-    <br>
-    <!--Main Navigation-->
     <header>
-        <!--Intro Section-->
-        <section class="view intro-2 hm-gradient">
-            <div class="full-bg-img">
-                <div class="container flex-center">
-                    <div class="d-flex align-items-center content-height">
-                        <div class="row flex-center pt-5 mt-3">
-                            <div class="col-md-6 text-center text-md-left mb-5">
-                                <div class="white-text">
-                                    <h1 class="h1-responsive font-weight-bold wow fadeInLeft" data-wow-delay="0.3s">Hyeyeong's blog </h1>
-                                    <hr class="hr-light wow fadeInLeft" data-wow-delay="0.3s">
-                                    <h6 class="wow fadeInLeft" data-wow-delay="0.3s">
-                                        Hello, I'm Gwaneyeong Yun, Hyeyeong's father. This blog is not perfectly built yet.. but I'm working on this and hope that I finish this blog as soon as possible.
-                                    </h6>
-                                    <br>
-                                    <a class="btn btn-outline-white wow fadeInLeft" href="{% url 'accounts:login' %}" data-wow-delay="0.3s">Login</a>
-                                </div>
-                            </div>
+        <!-- Full Page Intro -->
+        <div class="view intro-welcome">
+            <!-- Mask & flexbox options-->
+            <div class="mask rgba-gradient d-flex justify-content-center align-items-center">
+                <!-- Content -->
+                <div class="container">
+                    <!--Grid row-->
+                    <div class="row mt-5">
+                        <!--Grid column-->
+                        <div class="col-md-6 mb-5 mt-md-0 mt-5 white-text text-center text-md-left">
+                            <h1 class="h1-responsive font-weight-bold wow fadeInLeft animation" data-wow-delay="0.3s">Hyeyeong's blog </h1>
+                            <hr class="hr-light wow fadeInLeft animation" data-wow-delay="0.3s">
+                            <h6 class="mb-3 wow fadeInLeft animation" data-wow-delay="0.3s">Hello, I'm Gwaneyeong Yun, Hyeyeong's father. This blog is not perfectly built yet.. but I'm working on this and hope that I finish this blog as soon as possible.</h6>
+                            <a class="btn btn-outline-white wow fadeInLeft waves-effect waves-light" href="{% url 'accounts:login' %}" data-wow-delay="0.3s">Login</a>
+                        </div>
+                        <!--Grid column-->
+                        <!--Grid column-->
+                        <div class="col-md-6 col-xl-5 mb-4">
+                            <!--Form-->
+                            <form method="post">
+                                <div class="card wow fadeInRight" data-wow-delay="0.3s">
+                                    <div class="card-body">
+                                        <!--Header-->
+                                        <div class="text-center">
+                                            <h3 class="white-text"><i class="fa fa-user white-text"></i> Register:</h3>
+                                            <hr class="hr-light">
+                                        </div>
 
-                            <div class="col-md-6 col-xl-5 offset-xl-1 mb-5">
-                                <!--Form-->
-                                <form method="post">
-                                    <div class="card wow fadeInRight" data-wow-delay="0.3s">
-                                        <div class="card-body">
-                                            <!--Header-->
-                                            <div class="text-center">
-                                                <h3 class="white-text"><i class="fa fa-user white-text"></i> Register:</h3>
-                                                <hr class="hr-light">
-                                            </div>
+                                        <!--Body-->
+                                        {% csrf_token %}
+                                        {% if form.errors %}
+                                        <ul class="errorlist nonfield">
+                                            <li>Please enter a correct email and password.</li>
+                                            <li>Note that both fields may be case-sensitive.</li>
+                                        </ul>
+                                        {% endif %}
+                                        <div class="md-form">
+                                            <i class="fa fa-envelope prefix white-text active"></i>
+                                            <input type="email" name="email" id="form2" class="form-control">
+                                            <label for="form2" class="active">Your email</label>
+                                        </div>
+                                        <div class="md-form">
+                                            <i class="fa fa-user prefix white-text active"></i>
+                                            <input type="text" name="first_name" id="form3" class="form-control">
+                                            <label for="form3" class="active">Your name</label>
+                                        </div>
+                                        <div class="md-form">
+                                            <i class="fa fa-lock prefix white-text active"></i>
+                                            <input type="password" name="password1" id="form4" class="form-control">
+                                            <label for="form4" class="active">Your password</label>
+                                        </div>
 
-                                            <!--Body-->
-                                            {% csrf_token %}
-                                            {% if form.errors %}
-                                            <ul class="errorlist nonfield">
-                                                <li>Please enter a correct email and password.</li>
-                                                <li>Note that both fields may be case-sensitive.</li>
-                                            </ul>
-                                            {% endif %}
-                                            <div class="md-form">
-                                                <i class="fa fa-envelope prefix white-text active"></i>
-                                                <input type="email" name="email" id="form2" class="form-control">
-                                                <label for="form2" class="active">Your email</label>
-                                            </div>
-                                            <div class="md-form">
-                                                <i class="fa fa-user prefix white-text active"></i>
-                                                <input type="text" name="first_name" id="form3" class="form-control">
-                                                <label for="form3" class="active">Your name</label>
-                                            </div>
-                                            <div class="md-form">
-                                                <i class="fa fa-lock prefix white-text active"></i>
-                                                <input type="password" name="password1" id="form4" class="form-control">
-                                                <label for="form4" class="active">Your password</label>
-                                            </div>
+                                        <div class="md-form">
+                                            <i class="fa fa-lock prefix white-text active"></i>
+                                            <input type="password" name="password2" id="form4" class="form-control">
+                                            <label for="form4" class="active">Password Comfirmation</label>
+                                        </div>
 
-                                            <div class="md-form">
-                                                <i class="fa fa-lock prefix white-text active"></i>
-                                                <input type="password" name="password2" id="form4" class="form-control">
-                                                <label for="form4" class="active">Password Comfirmation</label>
-                                            </div>
+                                        <div class="text-center">
+                                            <button type="submit" name="button" class="btn btn-indigo">Sign up</button>
 
-                                            <div class="text-center">
-                                                <button type="submit" name="button" class="btn btn-indigo">Sign up</button>
-                                                <!-- <hr class="hr-light mb-3 mt-4">
-
-                                                <div class="inline-ul text-center d-flex justify-content-center">
-                                                    <a class="icons-sm tw-ic"><i class="fa fa-twitter white-text"></i></a>
-                                                    <a class="icons-sm li-ic"><i class="fa fa-linkedin white-text"> </i></a>
-                                                    <a class="icons-sm ins-ic"><i class="fa fa-instagram white-text"> </i></a>
-                                                </div> -->
-                                            </div>
+                                            <!-- Socila login -->
+                                            <!-- <hr class="hr-light mb-3 mt-4">
+                            <div class="inline-ul text-center d-flex justify-content-center">
+                                <a class="p-2 m-2 tw-ic">
+                                <i class="fa fa-twitter white-text"></i>
+                                </a>
+                                <a class="p-2 m-2 li-ic">
+                                <i class="fa fa-linkedin white-text"> </i>
+                                </a>
+                                <a class="p-2 m-2 ins-ic">
+                                <i class="fa fa-instagram white-text"> </i>
+                                </a>
+                            </div> -->
                                         </div>
                                     </div>
-                                </form>
-                                <!--/.Form-->
-                            </div>
+                                </div>
+                            </form>
+                            <!--/.Form-->
                         </div>
+                        <!--Grid column-->
                     </div>
+                    <!--Grid row-->
                 </div>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <div class="col-md-6 container white-text">
-                    <hr class="hr-light wow fadeInLeft" data-wow-delay="0.3s">
-                    <h6 class="wow fadeInLeft" data-wow-delay="0.3s">
-                        Update note..
-                    </h6>
-                    <h6 class="wow fadeInLeft" data-wow-delay="0.3s">
-                        <li>thumbnail & hovereffect for the calendar posts</li>
-                        <li>default profile image</li>
-                        <li>first page layout</li>
-                    </h6>
-                    <br>
-                </div>
+                <!-- Content -->
             </div>
-        </section>
+            <!-- Mask & flexbox options-->
+        </div>
+        <!-- Full Page Intro -->
     </header>
-
+    <!-- jqury를 bootstrap보다 위에 넣어야함!! -->
     <!-- JQuery -->
     <script type="text/javascript" src="{% static 'calendar/js/jquery-3.3.1.min.js' %}"></script>
     <!-- Tooltips -->
@@ -133,9 +180,8 @@
     <script type="text/javascript" src="{% static 'calendar/js/mdb.min.js' %}"></script>
 
     <script>
-    new WOW().init();
+        new WOW().init();
     </script>
 </body>
-<!-- jqury를 bootstrap보다 위에 넣어야함!! -->
 
 </html>

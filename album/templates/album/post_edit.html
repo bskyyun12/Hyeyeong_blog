@@ -11,7 +11,7 @@
         {% for image in images %}
             <li>
                 {{ image.image }}
-                <a class="text-danger" href="{% url 'album:image_remove' pk=image.pk %}">Delete</a>
+                <a class="text-danger" href="{% url 'album:image_remove' operation='post_edit' pk=image.pk %}">Delete</a>
             </li>
         {% endfor %}
     </ul>
@@ -55,7 +55,7 @@
 </form>
 {% endblock %}
 
-{% block jquery_script %}
+{% block script %}
 <!-- Displays selected files -->
 <script type="text/javascript">
 updateList = function() {

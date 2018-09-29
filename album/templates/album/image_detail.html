@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="post">
+    {% if user.is_authenticated and user.is_superuser or user == image.post.author %}
+    <!-- 삭제버튼 -->
+    <a class="btn btn-danger btn-sm" href="{% url 'album:image_remove' operation='image_detail' pk=image.pk %}">Delete</a>
+    <hr>
+    {% endif %}
+</div>
+<section class="p-0" id="portfolio">
+    <div class="container-fluid p-0">
+        <div class="row no-gutters">
+
+        <div class="col-lg-4 col-6">
+            <a class="portfolio-box" href="{{ image.image.url }}">
+                <img class="img-fluid" src="{{ image.image.url }}" alt="">
+                <div class="portfolio-box-caption">
+                    <div class="portfolio-box-caption-content">
+                        {% if image.description %}
+                        <div class="project-category text-faded">
+                            description
+                        </div>
+                        <div class="project-name">
+                            <h2>{{ image.description }}</h2>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        </div>
+    </div>
+</section>
+{% if image.description %}
+<p class="my-2">{{ image.description }}</p>
+{% endif %}
+<hr>
+
+{% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.errors }}
+        {{ form.comment }}
+        <button type="submit" class="btn btn-primary btn-sm my-2">Add Comment</button>
+        <hr>
+    </form>
+    {% for comment in image.image_comments.all %}
+        <div class="media">
+            {% for user in users %}
+            {% if user.email == comment.author %}
+            <a href="{{ user.userprofile.image.url }}">
+                        <img class="rounded-circle mr-3" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
+                    </a>
+            <div class="media-body">
+                <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+                            {% if user.first_name %}
+                                <h5 class="mt-0 font-weight-bold">{{ user.first_name }}</h5>
+                            {% else %}
+                                <h5 class="mt-0 font-weight-bold">{{ comment.author }}</h5>
+                            {% endif %}
+                        </a>
+                {{ comment.comment }}
+                {% if user.is_superuser or user.email == comment.author %}
+                <a class="btn-sm text-danger" href="{% url 'album:image_comment_remove' pk=comment.pk %}">Delete</a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <hr>
+    {% empty %}
+        <p>No comments here yet :(</p>
+    {% endfor %}
+
+{% else %}
+    <div class="comment">
+        <p>Login is required to read comments.</p>
+    </div>
+{% endif %}
+{% endblock %}

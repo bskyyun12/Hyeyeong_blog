@@ -1,0 +1,78 @@
+
+  <!-- <div class="full-bg-img"> -->
+      <section class="view intro-2 hm-gradient">
+          <div class="container flex-center">
+              <div class="d-flex align-items-center content-height">
+                  <div class="row flex-center pt-5 mt-3">
+                      <div class="col-md-6 text-center text-md-left mb-5">
+                          <div class="white-text">
+                              <h1 class="h1-responsive font-weight-bold wow fadeInLeft" data-wow-delay="0.3s">Hyeyeong's blog </h1>
+                              <hr class="hr-light wow fadeInLeft" data-wow-delay="0.3s">
+                              <h6 class="wow fadeInLeft" data-wow-delay="0.3s">
+                                      Hello, I'm Gwaneyeong Yun, Hyeyeong's father. This blog is not perfectly built yet.. but I'm working on this and hope that I finish this blog as soon as possible.
+                                  </h6>
+                              <br> 
+                              <a class="btn btn-outline-white wow fadeInLeft" href="{% url 'accounts:login' %}" data-wow-delay="0.3s">Login</a>
+                          </div>
+                      </div>
+
+                      <div class="col-md-6 col-xl-5 offset-xl-1 mb-5">
+                          <!--Form-->
+                          <form method="post">
+                              <div class="card wow fadeInRight" data-wow-delay="0.3s">
+                                  <div class="card-body">
+                                      <!--Header-->
+                                      <div class="text-center">
+                                          <h3 class="white-text"><i class="fa fa-user white-text"></i> Register:</h3>
+                                          <hr class="hr-light">
+                                      </div>
+
+                                      <!--Body-->
+                                      {% csrf_token %}
+                                      {% if form.errors %}
+                                      <ul class="errorlist nonfield">
+                                          <li>Please enter a correct email and password.</li>
+                                          <li>Note that both fields may be case-sensitive.</li>
+                                      </ul>
+                                      {% endif %}
+                                      <div class="md-form">
+                                          <i class="fa fa-envelope prefix white-text active"></i>
+                                          <input type="email" name="email" id="form2" class="form-control">
+                                          <label for="form2" class="active">Your email</label>
+                                      </div>
+                                      <div class="md-form">
+                                          <i class="fa fa-user prefix white-text active"></i>
+                                          <input type="text" name="first_name" id="form3" class="form-control">
+                                          <label for="form3" class="active">Your name</label>
+                                      </div>
+                                      <div class="md-form">
+                                          <i class="fa fa-lock prefix white-text active"></i>
+                                          <input type="password" name="password1" id="form4" class="form-control">
+                                          <label for="form4" class="active">Your password</label>
+                                      </div>
+
+                                      <div class="md-form">
+                                          <i class="fa fa-lock prefix white-text active"></i>
+                                          <input type="password" name="password2" id="form4" class="form-control">
+                                          <label for="form4" class="active">Password Comfirmation</label>
+                                      </div>
+
+                                      <div class="text-center">
+                                          <button type="submit" name="button" class="btn btn-indigo">Sign up</button>
+                                          <!-- <hr class="hr-light mb-3 mt-4">
+
+                                              <div class="inline-ul text-center d-flex justify-content-center">
+                                                  <a class="icons-sm tw-ic"><i class="fa fa-twitter white-text"></i></a>
+                                                  <a class="icons-sm li-ic"><i class="fa fa-linkedin white-text"> </i></a>
+                                                  <a class="icons-sm ins-ic"><i class="fa fa-instagram white-text"> </i></a>
+                                              </div> -->
+                                      </div>
+                                  </div>
+                              </div>
+                          </form>
+                          <!--/.Form-->
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>

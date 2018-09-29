@@ -10,12 +10,13 @@
         <link rel="stylesheet" href="{% static 'calendar/css/bootstrap.css' %}" />
         <!-- style.css -->
         <link rel="stylesheet" href="{% static 'calendar/css/style.css' %}" />
+
     </head>
     <body>
-        <br>
         <div class="view intro-base">
             <div class="full-bg-img spring-warmth-gradient">
                 <div class="container">
+                    <br>
                     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                         <a class="navbar-brand" href="{% url 'album:home' %}">Hyeyeong's blog ♥</a>
                         {% if user.is_authenticated %}
@@ -60,7 +61,7 @@
 
         <!-- JQuery (Bootstrap보다 위에 넣어야함!!) -->
         <script type="text/javascript" src="{% static 'calendar/js/jquery-3.3.1.min.js' %}"></script>
-        {% block jquery_script %}
+        {% block script %}
         {% endblock %}
         <!-- Tooltips -->
         <script type="text/javascript" src="{% static 'calendar/js/popper.min.js' %}"></script>
