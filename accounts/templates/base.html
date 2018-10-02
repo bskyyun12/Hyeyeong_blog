@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="{% static 'calendar/css/bootstrap.css' %}" />
         <!-- style.css -->
         <link rel="stylesheet" href="{% static 'calendar/css/style.css' %}" />
+        <link rel="stylesheet" href="{% static 'calendar/css/bootstrap-datepicker.css' %}" />
 
     </head>
     <body>
@@ -61,14 +62,20 @@
 
         <!-- JQuery (Bootstrap보다 위에 넣어야함!!) -->
         <script type="text/javascript" src="{% static 'calendar/js/jquery-3.3.1.min.js' %}"></script>
-        {% block script %}
-        {% endblock %}
+
         <!-- Tooltips -->
         <script type="text/javascript" src="{% static 'calendar/js/popper.min.js' %}"></script>
         <!-- Bootstrap core JavaScript -->
         <script type="text/javascript" src="{% static 'calendar/js/bootstrap.min.js' %}"></script>
         <!-- MDB core JavaScript - Welcome page -->
         <script type="text/javascript" src="{% static 'calendar/js/mdb.min.js' %}"></script>
+
+        <!-- Plugins -->
+        <!-- Datepicker.js -->
+        <script type="text/javascript" src="{% static 'calendar/js/bootstrap-datepicker.js' %}"></script>
+
+        {% block script %}
+        {% endblock %}
 
     </body>
 </html>

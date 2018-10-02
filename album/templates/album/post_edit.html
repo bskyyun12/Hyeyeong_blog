@@ -9,10 +9,10 @@
     Current image(s):
     <ul>
         {% for image in images %}
-            <li>
-                {{ image.image }}
-                <a class="text-danger" href="{% url 'album:image_remove' operation='post_edit' pk=image.pk %}">Delete</a>
-            </li>
+        <li>
+            {{ image.image }}
+            <a class="text-danger" href="{% url 'album:image_remove' operation='post_edit' pk=image.pk %}">Delete</a>
+        </li>
         {% endfor %}
     </ul>
     <label>Pictures</label>
@@ -24,30 +24,30 @@
 
     </div>
 
-
     <label>{{ form.title.label }}</label>
-        <input placeholder="{{ form.title.label }}" value="{{ form.title.value }}" name="title" class="form-control">
+    <input placeholder="{{ form.title.label }}" value="{{ form.title.value }}" name="title" class="form-control">
+
     <label>{{ form.description.label }}</label>
-        <input placeholder="{{ form.description.label }}" value="{{ form.description.value }}" name="description" class="form-control">
-    <label>{{ image_form.image.label }}</label
+    <input placeholder="{{ form.description.label }}" value="{{ form.description.value }}" name="description" class="form-control">
+
     <label>{{ form.date.label }}{{ form.date.errors }}</label>
-        <input type="date" placeholder="{{ form.date.label }}" value="{{ form.date.value|date:"Y-m-d" }}" name="date" class="form-control">
+    <input type="text" id="datepicker" placeholder="{{ form.date.label }}" value="{{ form.date.value|date:"Y-m-d" }}" name="date" class="form-control">
 
     <!-- emoticons -->
-    <label>{{ form.emoticon.label }}</label><br>
-    <div class="form-group form-inline">
-        <div class="custom-control custom-radio">
-            <input type="radio" id="customRadio1" name="emoticon" class="custom-control-input" {% if form.emoticon.value == 'happy' %} checked {% endif %} value="happy">
-            <label class="custom-control-label" for="customRadio1"><img src="/media/emoticons/happy.png" style="width:50;"> Happy</label>
+    <label>{{ form.emoticon.label }}{{ form.emoticon.errors }}</label>
+
+    <div class="row">
+        {% for value, text in form.emoticon.field.choices %}
+        <div class="col-3 col-sm-2 col-lg-1">
+            <input id="id_emoticons_{{ forloop.counter0 }}" name="{{ form.emoticon.name }}" type="checkbox" value="{{ value }}"
+                {% for emot in form.emoticon.value %}
+                    {% ifequal emot value %}
+                        checked="checked"
+                    {% endifequal %}
+                {% endfor %}>
+            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{text}}.png" style="width: 100%; display: block;"> {{text}}</label>
         </div>
-        <div class="custom-control custom-radio">
-            <input type="radio" id="customRadio2" name="emoticon" class="custom-control-input" {% if form.emoticon.value == 'sleepy' %} checked {% endif %} value="sleepy">
-            <label class="custom-control-label" for="customRadio2"><img src="/media/emoticons/sleepy.png" style="width:50;"> Sleepy</label>
-        </div>
-        <div class="custom-control custom-radio">
-            <input type="radio" id="customRadio3" name="emoticon" class="custom-control-input" {% if form.emoticon.value == 'sick' %} checked {% endif %}  value="sick">
-            <label class="custom-control-label" for="customRadio3"><img src="/media/emoticons/sick.png" style="width:50;"> Sick</label>
-        </div>
+        {% endfor %}
     </div>
 
     <hr>
@@ -58,16 +58,26 @@
 {% block script %}
 <!-- Displays selected files -->
 <script type="text/javascript">
-updateList = function() {
-    var input = document.getElementById('fileupload');
-    var output = document.getElementById('fileList');
+    updateList = function() {
+        var input = document.getElementById('fileupload');
+        var output = document.getElementById('fileList');
 
-    htmlStr = 'Selected files:<ul>';
-    for (var i = 0; i < input.files.length; ++i) {
-        htmlStr += '<li>' + input.files.item(i).name + '</li>';
+        htmlStr = 'Selected files:<ul>';
+        for (var i = 0; i < input.files.length; ++i) {
+            htmlStr += '<li>' + input.files.item(i).name + '</li>';
+        }
+        htmlStr += '</ul>';
+        output.innerHTML = htmlStr
     }
-    htmlStr += '</ul>';
-    output.innerHTML = htmlStr
-}
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        $('#datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+        });
+    });
 </script>
 {% endblock %}

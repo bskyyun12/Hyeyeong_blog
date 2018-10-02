@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'album',
     'django_cleanup',
     'imagekit',
+    'multiselectfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

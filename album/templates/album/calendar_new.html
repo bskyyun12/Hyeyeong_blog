@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
 <h1>New Calendar post</h1>
@@ -8,37 +7,41 @@
     {% csrf_token %}
 
     <label>Pictures</label>
-        <div class="custom-file">
-            <input id="fileupload" type="file" name="image" multiple onchange="javascript:updateList()" class="custom-file-input" accept="image/*">
-            <label class="custom-file-label" for="inputGroupFile02">Upload Pictures</label>
-        </div>
-        <div id="fileList"></div>
+    <div class="custom-file">
+        <input id="fileupload" type="file" name="image" onchange="javascript:updateList()" class="custom-file-input" accept="image/*" required multiple>
+        <label class="custom-file-label" for="inputGroupFile02">Upload Pictures</label>
+    </div>
+    <div id="fileList"></div>
 
     <label>{{ form.title.label }}{{ form.title.errors }}</label>
-        <input placeholder="{{  form.title.label  }}" name="title" class="form-control">
+    <input placeholder="{{  form.title.label  }}" name="title" class="form-control" required>
+
     <label>{{ form.description.label }}{{ form.description.errors }}</label>
-        <input placeholder="{{ form.description.label }}" name="description" class="form-control">
+    <input placeholder="{{ form.description.label }}" name="description" class="form-control" required>
+
     <label>{{ form.date.label }}{{ form.date.errors }}</label>
-        <input type="date" placeholder="{{ form.date.label }}" value="{{ today|date:"Y-m-d" }}" name="date" class="form-control">
+    <input type="text" id="datepicker" placeholder="{{ form.date.label }}" value="{{ today|date:"Y-m-d" }}" name="date" class="form-control" required>
 
-
-    <!-- emoticons -->
-    <label>{{ form.emoticon.label }}</label><br>
-
-    <div class="form-group form-inline">
-        <div class="custom-control custom-radio">
-            <input type="radio" id="customRadio1" name="emoticon" class="custom-control-input" checked="" value="happy">
-            <label class="custom-control-label" for="customRadio1"><img src="/media/emoticons/happy.png" style="width:50;"> Happy</label>
+    <label>{{ form.emoticon.label }}{{ form.emoticon.errors }}</label>
+    <div class="row">
+        {% for value, text in form.emoticon.field.choices %}
+        <div class="col-3 col-sm-2 col-lg-1">
+            <input id="id_emoticons_{{ forloop.counter0 }}" name="{{ form.emoticon.name }}" type="checkbox" value="{{ value }}">
+            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{text}}.png" style="width: 100%; display: block;"> {{text}}</label>
         </div>
-        <div class="custom-control custom-radio">
-            <input type="radio" id="customRadio2" name="emoticon" class="custom-control-input" value="sleepy">
-            <label class="custom-control-label" for="customRadio2"><img src="/media/emoticons/sleepy.png" style="width:50;"> Sleepy</label>
-        </div>
-        <div class="custom-control custom-radio">
-            <input type="radio" id="customRadio3" name="emoticon" class="custom-control-input" value="sick">
-            <label class="custom-control-label" for="customRadio3"><img src="/media/emoticons/sick.png" style="width:50;"> Sick</label>
-        </div>
+        {% endfor %}
     </div>
+
+    <!-- <label for="id_emoticon">Emoticons</label>
+    {% for choice in form.emoticon.field.choices %}
+        <li>
+            <input type="checkbox" multiple name="emoticon" value="{{choice.1}}"
+                {% ifequal form.emoticon.data choice.0 %}
+                checked="checked"
+                {% endifequal %}/>
+            <label for="checkbox"><img src="/media/emoticons/{{choice.1}}.png" style="width:50;"> {{choice.1}}</label>
+        </li>
+    {% endfor %} -->
 
     <hr>
     <button type="submit" class="save btn btn-primary">Upload</button>
@@ -47,18 +50,31 @@
 {% endblock %}
 
 {% block script %}
+<!-- Plugins -->
+
+
 <!-- Displays selected files -->
 <script type="text/javascript">
-updateList = function() {
-    var input = document.getElementById('fileupload');
-    var output = document.getElementById('fileList');
+    updateList = function() {
+        var input = document.getElementById('fileupload');
+        var output = document.getElementById('fileList');
 
-    htmlStr = 'Selected files:<ul>';
-    for (var i = 0; i < input.files.length; ++i) {
-        htmlStr += '<li>' + input.files.item(i).name + '</li>';
+        htmlStr = 'Selected files:<ul>';
+        for (var i = 0; i < input.files.length; ++i) {
+            htmlStr += '<li>' + input.files.item(i).name + '</li>';
+        }
+        htmlStr += '</ul>';
+        output.innerHTML = htmlStr
     }
-    htmlStr += '</ul>';
-    output.innerHTML = htmlStr
-}
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        $('#datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+        });
+    });
 </script>
 {% endblock %}

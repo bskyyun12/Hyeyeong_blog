@@ -1,5 +1,5 @@
 from django import forms
-from .models import Calendar, Image, Comment, ImageComment
+from .models import Calendar, Comment, Image, ImageComment
 
 class CalendarForm(forms.ModelForm):
 
@@ -23,6 +23,14 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('comment',)
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = (
+            'description',
+            'image',
+        )
 
 class ImageCommentForm(forms.ModelForm):
     comment = forms.CharField(widget=forms.TextInput(

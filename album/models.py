@@ -3,6 +3,19 @@ from django.db import models
 from django.utils import timezone
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from multiselectfield import MultiSelectField
+
+EMOTICONS = (
+    ('happy', 'Happy'),
+    ('sleepy', 'Sleepy'),
+    ('sick', 'Sick'),
+    ('angry', 'Angry'),
+    ('bored', 'Bored'),
+    ('laugh', 'Laugh'),
+    ('love', 'Love'),
+    ('pout', 'Pout'),
+    ('sad', 'Sad'),
+)
 
 # Create your models here.
 class Calendar(models.Model):
@@ -10,7 +23,7 @@ class Calendar(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     date = models.DateField()
-    emoticon = models.CharField(max_length=100)
+    emoticon = MultiSelectField(choices=EMOTICONS, max_choices=3)
 
     def __str__(self):
         return self.title
@@ -28,7 +41,7 @@ class Comment(models.Model):
 # Calendar images
 class Image(models.Model):
     post = models.ForeignKey('album.Calendar', related_name='images', on_delete=models.CASCADE)
-    description = models.TextField(null=True)
+    description = models.TextField(blank=True)
     image = models.ImageField(upload_to='calendar_image/%Y/%m')
     thumbnail = ImageSpecField(
 		source = 'image',

@@ -8,8 +8,11 @@ from django.contrib.auth.decorators import login_required
 from .forms import (
     CalendarForm,
     CommentForm,
+    ImageForm,
     ImageCommentForm,
 )
+
+from django.db.models import Count
 
 class CalendarView(TemplateView):
     template_name = 'album/home.html'
@@ -94,10 +97,8 @@ class CalendarView(TemplateView):
 
 @login_required
 def post_new(request):
-
     if request.method == 'POST':
         form = CalendarForm(request.POST)
-
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -108,21 +109,6 @@ def post_new(request):
                     post=post,
                     image=img
                 ).save()
-
-            # title = form.cleaned_data['title']
-            # description = form.cleaned_data['description']
-            # date = form.cleaned_data['date']
-            # image = form.cleaned_data['image']
-            # emoticon = form.cleaned_data['emoticon']
-            #
-            # Calendar.objects.create(
-            #     author=request.user,
-            #     title=title,
-            #     description=description,
-            #     date=date,
-            #     image=image,
-            #     emoticon=emoticon,
-            # ).save()
 
             return redirect('album:home')
     else:
@@ -151,14 +137,6 @@ def post_edit(request, pk):
                     post=post,
                     image=img
                 ).save()
-
-
-            # image = image_form.save(commit=False)
-            # for img in request.FILES.getlist('image'):
-            #     Image.objects.create(
-            #         post=post,
-            #         image=img
-            #     ).save()
 
             return redirect('album:post_detail', pk=post.pk)
     else:
@@ -224,6 +202,26 @@ class ImageDetailView(TemplateView):
 
         args =  {'form': form, 'image': image}
         return render(request, self.template_name, args)
+
+@login_required
+def image_edit(request, pk):
+    image = get_object_or_404(Image, pk=pk)
+
+    if request.method == "POST":
+        form = ImageForm(request.POST, instance=image)
+        if form.is_valid():
+            image = form.save(commit=False)
+            if request.FILES:
+                image.image = request.FILES['image']
+            image.save()
+
+            return redirect('album:image_detail', pk=image.pk)
+    else:
+        form = ImageForm(instance=image)
+    args = {
+        'form': form,
+    }
+    return render(request, 'album/image_edit.html', args)
 
 @login_required
 def image_remove(request, operation, pk):

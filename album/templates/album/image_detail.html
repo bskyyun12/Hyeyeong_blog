@@ -3,8 +3,10 @@
 {% block content %}
 <div class="post">
     {% if user.is_authenticated and user.is_superuser or user == image.post.author %}
+    <!-- 수정버튼 -->
+    <a class="btn btn-secondary btn-sm" href="{% url 'album:image_edit' pk=image.pk %}">Edit Image</a>
     <!-- 삭제버튼 -->
-    <a class="btn btn-danger btn-sm" href="{% url 'album:image_remove' operation='image_detail' pk=image.pk %}">Delete</a>
+    <a class="btn btn-danger btn-sm" href="{% url 'album:image_remove' operation='image_detail' pk=image.pk %}">Delete Image</a>
     <hr>
     {% endif %}
 </div>
@@ -33,9 +35,6 @@
         </div>
     </div>
 </section>
-{% if image.description %}
-<p class="my-2">{{ image.description }}</p>
-{% endif %}
 <hr>
 
 {% if user.is_authenticated %}
@@ -62,12 +61,12 @@
                             {% endif %}
                         </a>
                 {{ comment.comment }}
-                {% if user.is_superuser or user.email == comment.author %}
-                <a class="btn-sm text-danger" href="{% url 'album:image_comment_remove' pk=comment.pk %}">Delete</a>
-                {% endif %}
             </div>
             {% endif %}
             {% endfor %}
+            {% if user.is_superuser or user.email == comment.author %}
+            <a class="btn-sm text-danger" href="{% url 'album:image_comment_remove' pk=comment.pk %}">Delete</a>
+            {% endif %}
         </div>
         <hr>
     {% empty %}

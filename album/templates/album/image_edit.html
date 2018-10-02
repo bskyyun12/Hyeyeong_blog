@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Edit image</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    Current picture : {{ form.image.value }}
+    <br>
+    <label>Picture</label>
+    <div class="custom-file">
+        <input id="fileupload" type="file" name="image" value="{{ form.image.value }}" multiple onchange="javascript:updateList()" class="custom-file-input" accept="image/*">
+        <label class="custom-file-label" for="inputGroupFile02">Change Picture</label>
+    </div>
+    <div id="fileList">
+
+    </div>
+
+
+    <br>
+    <label>{{ form.description.label }}</label>
+        <input placeholder="{{ form.description.label }}" value="{{ form.description.value }}" name="description" class="form-control">
+
+    <hr>
+    <button type="submit" name="button" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
+
+{% block script %}
+<!-- Displays selected files -->
+<script type="text/javascript">
+updateList = function() {
+    var input = document.getElementById('fileupload');
+    var output = document.getElementById('fileList');
+
+    htmlStr = 'Selected files:<ul>';
+    for (var i = 0; i < input.files.length; ++i) {
+        htmlStr += '<li>' + input.files.item(i).name + '</li>';
+    }
+    htmlStr += '</ul>';
+    output.innerHTML = htmlStr
+}
+</script>
+
+<script type="text/javascript">
+        $(function () {
+            $('#datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight : true,
+            });
+        });
+</script>
+{% endblock %}
