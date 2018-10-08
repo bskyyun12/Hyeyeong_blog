@@ -38,7 +38,7 @@
 <hr>
 
 {% if user.is_authenticated %}
-    <form method="post">
+    <form method="post" autocomplete="off">
         {% csrf_token %}
         {{ form.errors }}
         {{ form.comment }}

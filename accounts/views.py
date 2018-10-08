@@ -21,17 +21,41 @@ def welcome(request):
         if form.is_valid():
             form.save()
             ######### this makes users automatically log in when they successfully register
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password1']
-            user = authenticate(email=email, password=password)
-            login(request, user)
+            # email = form.cleaned_data['email']
+            # password = form.cleaned_data['password1']
+            # user = authenticate(email=email, password=password)
+            # login(request, user)
             ##########
-            return redirect(reverse('album:home'))
+            return redirect(reverse('accounts:login'))
     else:
         form = RegistrationForm()
 
     args = {'form': form}
     return render(request, 'welcome.html', args)
+
+def user_login(request):
+    if request.method == 'GET':
+        context = ''
+        return render(request, 'registration/login.html', {'context': context})
+
+    elif request.method == 'POST':
+        email = request.POST.get('email', '')
+        password = request.POST.get('password', '')
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect(reverse('album:home'))
+            else:
+                context = 'Your account is not activated yet. Please contact Gwangyeong to activate your account.'  # to display error?
+                return render(request, 'registration/login.html', {'context': context})
+            # Redirect to a success page?
+            # return HttpResponseRedirect('/')
+        else:
+            print(999999999999999999999999999999999)
+            context = 'Please enter a correct email and password. Note that both fields may be case-sensitive.'   # to display error?
+            return render(request, 'registration/login.html', {'context': context})
 
 @login_required
 def view_profile(request, pk=None):

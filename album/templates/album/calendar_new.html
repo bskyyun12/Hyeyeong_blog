@@ -3,7 +3,7 @@
 {% block content %}
 <h1>New Calendar post</h1>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" autocomplete="off">
     {% csrf_token %}
 
     <label>Pictures</label>
@@ -27,7 +27,7 @@
         {% for value, text in form.emoticon.field.choices %}
         <div class="col-3 col-sm-2 col-lg-1">
             <input id="id_emoticons_{{ forloop.counter0 }}" name="{{ form.emoticon.name }}" type="checkbox" value="{{ value }}">
-            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{text}}.png" style="width: 100%; display: block;"> {{text}}</label>
+            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{value}}.png" style="width: 100%; display: block;"> {{text}}</label>
         </div>
         {% endfor %}
     </div>

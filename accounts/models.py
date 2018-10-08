@@ -77,7 +77,7 @@ class UserProfileManager(models.Manager):
 
 class UserProfile(models.Model):
     # From Django 2.0 on_delete is required
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.CharField(blank=True, max_length=100, default='')
     city = models.CharField(blank=True, max_length=100, default='')
     website = models.URLField(blank=True, default='')

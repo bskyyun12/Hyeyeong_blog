@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Edit image</h1>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" autocomplete="off">
     {% csrf_token %}
 
     Current picture : {{ form.image.value }}

@@ -11,10 +11,15 @@
 </div>
 
 <hr>
-<form class="my-2" action="" method="get">
+<form class="my-2" action="" method="get" autocomplete="off">
     <div class="form-inline my-2">
         <input class="form-control mr-sm-2 my-2" placeholder="Title" type="text" name="title">
-        <input class="form-control mr-sm-2 my-2" placeholder="Emoticon" type="text" name="emoticon">
+        <select class="form-control mr-sm-2 my-2" name="emoticon">
+            <option selected value="" >Emoticon</option>
+            {% for value, text in form.emoticon.field.choices %}
+                <option value="{{value}}">{{text}}</option>
+            {% endfor %}
+        </select>
         <input class="form-control mr-sm-2 my-2" placeholder="Date" type="text" id="datepicker" name="year_month">
     </div>
         <button type="submit" class="btn btn-primary my-2">Search</button>
@@ -60,15 +65,14 @@
                         <div class="project-name">
                             {{ post.title }}
                         </div>
-                        <hr>
+                        <!-- <hr>
                             {% with total=post.comments.count %}
                                 {{ total }} comment{{ total|pluralize }}
                             {% endwith %}
-                            <!-- 이부분 어렵다 ㅠㅠ -->
-                            <br>-----<br>
+
                             {% for image in post.images.all %}
                                 {{ forloop.counter }}. {{ image.image_comments.count }}<br>
-                            {% endfor %}
+                            {% endfor %} -->
                     </div>
                 </div>
             </a>

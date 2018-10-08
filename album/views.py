@@ -22,6 +22,7 @@ class CalendarView(TemplateView):
         current_month = datetime.today().month
         posts = Calendar.objects.all().order_by('-date')
         thumbnail = Image.objects.all()
+        form = CalendarForm(request.POST)
         # posts = Calendar.objects.filter(date__year=current_year, date__month=current_month).order_by('date')
 
 
@@ -80,6 +81,7 @@ class CalendarView(TemplateView):
 
 
         args = {
+            'form': form,
             'year_month': year_month,
             'next_year_month': next_year_month,
             'pre_year_month': pre_year_month,

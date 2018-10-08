@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Edit post</h1>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" autocomplete="off">
     {% csrf_token %}
 
     Current image(s):
@@ -45,7 +45,7 @@
                         checked="checked"
                     {% endifequal %}
                 {% endfor %}>
-            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{text}}.png" style="width: 100%; display: block;"> {{text}}</label>
+            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{value}}.png" style="width: 100%; display: block;"> {{text}}</label>
         </div>
         {% endfor %}
     </div>
