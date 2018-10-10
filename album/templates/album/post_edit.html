@@ -80,4 +80,13 @@
         });
     });
 </script>
+
+<script type="text/javascript">
+    $('input[type=checkbox]').on('change', function(e) {
+        if ($('input[type=checkbox]:checked').length > 3) {
+            $(this).prop('checked', false);
+            alert("You can't choose more than 3.");
+        }
+    });
+</script>
 {% endblock %}

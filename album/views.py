@@ -183,15 +183,31 @@ class PostDetailView(TemplateView):
 class ImageDetailView(TemplateView):
     template_name = 'album/image_detail.html'
 
-    def get(self, request, pk):
+    def get(self, request, post_pk, pk):
         image = get_object_or_404(Image, pk=pk)
+
+        try:
+            previous_image = Image.objects.filter(post=image.post.pk, pk__lt=image.pk).order_by('-pk')[0]
+        except:
+            previous_image = Image.objects.filter(post=image.post.pk).last()
+        try:
+            next_image = Image.objects.filter(post=image.post.pk,pk__gt=image.pk).order_by('pk')[0]
+        except:
+            next_image = Image.objects.filter(post=image.post.pk).first()
+
         form = ImageCommentForm()
         users = User.objects.all()
 
-        args = {'form': form, 'image': image, 'users': users}
+        args = {
+            'previous_image': previous_image,
+            'next_image': next_image,
+            'image': image,
+            'form': form,
+            'users': users
+        }
         return render(request, self.template_name, args)
 
-    def post(self, request, pk):
+    def post(self, request, post_pk, pk):
         image = get_object_or_404(Image, pk=pk)
         form = ImageCommentForm(request.POST)
         if form.is_valid():
@@ -200,7 +216,7 @@ class ImageDetailView(TemplateView):
             comment.author = request.user
             comment.save()
             form = ImageCommentForm() # 입력후 다시 빈칸으로 만들기
-            return redirect('album:image_detail', pk=image.pk)
+            return redirect('album:image_detail', post_pk=image.post.pk, pk=image.pk)
 
         args =  {'form': form, 'image': image}
         return render(request, self.template_name, args)
@@ -217,7 +233,7 @@ def image_edit(request, pk):
                 image.image = request.FILES['image']
             image.save()
 
-            return redirect('album:image_detail', pk=image.pk)
+            return redirect('album:image_detail', post_pk=image.post.pk, pk=image.pk)
     else:
         form = ImageForm(instance=image)
     args = {
@@ -244,7 +260,7 @@ def comment_remove(request, pk):
 def image_comment_remove(request, pk):
     comment = get_object_or_404(ImageComment, pk=pk)
     comment.delete()
-    return redirect('album:image_detail', pk=comment.image.pk)
+    return redirect('album:image_detail', post_pk=comment.image.post.pk, pk=comment.image.pk)
 
 @login_required
 def change_friends(request, operation, pk):

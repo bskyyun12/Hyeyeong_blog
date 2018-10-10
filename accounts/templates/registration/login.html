@@ -18,30 +18,18 @@
             {% endfor %}
             <button type="submit" name="button" class="btn btn-primary">Login</button> -->
 
-
             {% csrf_token %}
+            {% if context %}
+                <ul>
+                    <li>{{ context }}</li>
+                </ul>
+            {% endif %}
+            <div class="col-md-6 col-sm-12">
+                <input type="text" id="email" name="email"  placeholder="Email" class="form-control my-2">
+                <input type="password" name="password" id="password" placeholder="Password" class="form-control my-2">
 
-            {{context}}
-
-            <div class="control-group">
-                <label class="control-label" for="email">Email</label>
-                <div class="controls">
-                    <input type="text" id="email" name="email"  placeholder="Email">
-                </div>
+                <button type="submit" name="button" class="btn btn-primary my-2">Login</button>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="password">Password</label>
-                <div class="controls">
-                    <input type="password" name="password" id="password" placeholder="Password">
-                </div>
-            </div>
-            <div class="control-group">
-                <div class="controls">
-                    <button type="submit" name="button" class="btn btn-primary">Login</button>
-                </div>
-            </div>
-
-
         </form>
     </div>
 {% endblock %}

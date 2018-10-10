@@ -2,6 +2,9 @@
 
 {% block content %}
 <div class="post">
+
+    <a class="btn btn-secondary btn-sm" href="{% url 'album:post_detail' pk=image.post.pk %}">Go back</a>
+
     {% if user.is_authenticated and user.is_superuser or user == image.post.author %}
     <!-- 수정버튼 -->
     <a class="btn btn-secondary btn-sm" href="{% url 'album:image_edit' pk=image.pk %}">Edit Image</a>
@@ -10,13 +13,11 @@
     <hr>
     {% endif %}
 </div>
-<section class="p-0" id="portfolio">
-    <div class="container-fluid p-0">
-        <div class="row no-gutters">
 
-        <div class="col-lg-4 col-6">
-            <a class="portfolio-box" href="{{ image.image.url }}">
-                <img class="img-fluid" src="{{ image.image.url }}" alt="">
+    <div class="container-fluid p-0">
+        <div class="row no-gutters col-lg-8">
+            <a class="portfolio-box" href="{{ image.image.url }}" style="max-width: 100%;">
+                <img class="card-img" src="{{ image.image.url }}" alt="Card image">
                 <div class="portfolio-box-caption">
                     <div class="portfolio-box-caption-content">
                         {% if image.description %}
@@ -30,11 +31,26 @@
                     </div>
                 </div>
             </a>
-        </div>
+
+            <ol class="carousel-indicators">
+                {% for img in image.post.images.all %}
+                    <li class="{% if img.pk is image.pk %}active{% endif %}"></li>
+                {% endfor %}
+            </ol>
+
+            <a class="carousel-control-prev" href="{% url 'album:image_detail' post_pk=image.post.pk pk=previous_image.pk %}">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="{% url 'album:image_detail' post_pk=image.post.pk pk=next_image.pk %}">
+                <span class="carousel-control-next-icon"></span>
+            </a>
 
         </div>
     </div>
-</section>
+
+
+
+
 <hr>
 
 {% if user.is_authenticated %}

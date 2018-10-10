@@ -50,7 +50,8 @@ class Image(models.Model):
 		options = {'quality': 60})  		# 저장 옵션
 
     def __str__(self):
-        return f'image in {self.post}'
+        return f'{self.pk} in {self.post}'
+
 
 # Calendar comment
 class ImageComment(models.Model):

@@ -28,8 +28,8 @@
 <hr>
 
 
-<h1 class="my-4 text-center">
-    <form class="my-2" action="" method="get">
+<h2 class="my-4 text-center">
+    <form class="my-2 mr-2" action="" method="get">
         {% if title or emoticon %}
             Searched by
             {% if title %}
@@ -43,13 +43,13 @@
         <button type="submit" class="btn btn-primary ml-sm-5" name="year_month"  value="{{next_year_month}}">Next</button>
         {% endif %}
     </form>
-</h1>
+</h2>
 
 <div class="container">
     <div class="row text-center">
         {% for post in posts %}
         <div class="card text-center mb-3 col-6 col-lg-4">
-            <h3 class="card-header">{{ post.date|date:"Y.m.d" }}</h3>
+            <h3 class="card-header home_date">{{ post.date|date:"Y.m.d" }}</h3>
 
             <a class="portfolio-box" href="{% url 'album:post_detail' pk=post.pk %}">
                 {% for thumb in post.images.all %}
@@ -76,12 +76,16 @@
                     </div>
                 </div>
             </a>
-            <form method="get">
-                {% for emot in post.emoticon %}
-                    <button type="submit" class="btn btn-primary btn-sm" name="emoticon" value="{{ emot }}" >
-                        <img src="/media/emoticons/{{ emot }}.png" style="width:35;">
-                    </button>
-                {% endfor %}
+            <form method="get" class="form-inline">
+                <div class="row justify-content-center">
+                    {% for emot in post.emoticon %}
+                    <div class="col-4" style="padding: 4%;">
+                        <button type="submit" class="btn btn-outline-primary btn-sm" name="emoticon" value="{{ emot }}" style="padding: 0.1rem 0.1rem; border-color: transparent;">
+                            <img src="/media/emoticons/{{ emot }}.png" style="width: 100%; display: block;">
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
             </form>
 
         </div>
