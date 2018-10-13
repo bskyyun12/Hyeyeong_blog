@@ -9,8 +9,8 @@
     <a class="btn btn-secondary btn-sm" href="{% url 'album:post_edit' pk=post.pk %}">Edit Post</a>
     <!-- 삭제버튼 -->
     <a class="btn btn-danger btn-sm" href="{% url 'album:post_remove' pk=post.pk %}">Delete Post</a>
-    <hr>
     {% endif %}
+    <hr>
 
     <h1>Title : {{ post.title }}</h1>
     <h2>{{ post.date|date:"Y.m.d" }}</h2>
@@ -108,7 +108,7 @@
     {% for comment in post.comments.all %}
         <div class="media">
             {% for user in users %}
-                {% if user.email == comment.author %}
+                {% if user == comment.author %}
                 <a href="{{ user.userprofile.image.url }}">
                             <img class="rounded-circle mr-3" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
                         </a>
@@ -124,7 +124,7 @@
                 </div>
                 {% endif %}
             {% endfor %}
-            {% if user.is_superuser or user.email == comment.author %}
+            {% if user.is_superuser or user == comment.author %}
                 <a class="btn-sm text-danger" href="{% url 'album:comment_remove' pk=comment.pk %}">Delete</a>
             {% endif %}
         </div>

@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="post">
 
@@ -64,7 +63,7 @@
     {% for comment in image.image_comments.all %}
         <div class="media">
             {% for user in users %}
-            {% if user.email == comment.author %}
+            {% if user == comment.author %}
             <a href="{{ user.userprofile.image.url }}">
                         <img class="rounded-circle mr-3" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
                     </a>
@@ -80,7 +79,7 @@
             </div>
             {% endif %}
             {% endfor %}
-            {% if user.is_superuser or user.email == comment.author %}
+            {% if user.is_superuser or user == comment.author %}
             <a class="btn-sm text-danger" href="{% url 'album:image_comment_remove' pk=comment.pk %}">Delete</a>
             {% endif %}
         </div>

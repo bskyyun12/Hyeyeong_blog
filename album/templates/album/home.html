@@ -6,6 +6,8 @@
         <h5><a class="text-info" href="{% url 'accounts:view_profile' %}">Welcome! {{user.first_name}}</a></h5>
     </div>
     <div class="col-sm-6">
+
+
         <button onclick="window.location='{% url 'album:post_new' %}'" type="button" class="btn btn-primary" >New Post</button>
     </div>
 </div>
@@ -14,13 +16,14 @@
 <form class="my-2" action="" method="get" autocomplete="off">
     <div class="form-inline my-2">
         <input class="form-control mr-sm-2 my-2" placeholder="Title" type="text" name="title">
+        <input class="form-control mr-sm-2 my-2" placeholder="Description" type="description" name="description">
+        <input class="form-control mr-sm-2 my-2" placeholder="Date" type="text" id="datepicker" name="year_month">
         <select class="form-control mr-sm-2 my-2" name="emoticon">
             <option selected value="" >Emoticon</option>
             {% for value, text in form.emoticon.field.choices %}
                 <option value="{{value}}">{{text}}</option>
             {% endfor %}
         </select>
-        <input class="form-control mr-sm-2 my-2" placeholder="Date" type="text" id="datepicker" name="year_month">
     </div>
         <button type="submit" class="btn btn-primary my-2">Search</button>
 </form>
@@ -50,6 +53,9 @@
         {% for post in posts %}
         <div class="card text-center mb-3 col-6 col-lg-4">
             <h3 class="card-header home_date">{{ post.date|date:"Y.m.d" }}</h3>
+            title: {{ post.title }}<br>
+            description: {{ post.description }}
+
 
             <a class="portfolio-box" href="{% url 'album:post_detail' pk=post.pk %}">
                 {% for thumb in post.images.all %}
@@ -106,4 +112,7 @@
         });
     });
 </script>
+
+
+
 {% endblock %}

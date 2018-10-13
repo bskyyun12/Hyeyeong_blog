@@ -8,7 +8,6 @@ from accounts import views
 
 urlpatterns = [
     path('', views.welcome, name='welcome'),
-    # path('', CalendarView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('account/', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('album/', include(('album.urls', 'album'), namespace='album')),

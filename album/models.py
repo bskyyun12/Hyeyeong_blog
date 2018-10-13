@@ -19,7 +19,7 @@ EMOTICONS = (
 
 # Create your models here.
 class Calendar(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.TextField()
     date = models.DateField()
@@ -31,7 +31,8 @@ class Calendar(models.Model):
 # Calendar comment
 class Comment(models.Model):
     post = models.ForeignKey('album.Calendar', related_name='comments', on_delete=models.CASCADE)
-    author = models.CharField(max_length=100)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # author = models.CharField(max_length=100)
     comment = models.CharField(max_length=200)
     created_date = models.DateTimeField(default=timezone.now)
 
@@ -50,13 +51,14 @@ class Image(models.Model):
 		options = {'quality': 60})  		# 저장 옵션
 
     def __str__(self):
-        return f'{self.pk} in {self.post}'
+        return f'{self.post.title}\'s image'
 
 
 # Calendar comment
 class ImageComment(models.Model):
     image = models.ForeignKey('album.Image', related_name='image_comments', on_delete=models.CASCADE)
-    author = models.CharField(max_length=100)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # author = models.CharField(max_length=100)
     comment = models.CharField(max_length=200)
     created_date = models.DateTimeField(default=timezone.now)
 
@@ -66,7 +68,7 @@ class ImageComment(models.Model):
 class Friend(models.Model):
     # related_name의 default는 related_name='friend_set'이므로 중복되지 않도록  이름을 지어준것
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
-    current_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner', null=True, on_delete=models.DO_NOTHING)
+    current_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner', null=True, on_delete=models.CASCADE)
 
     @classmethod
     def make_friend(cls, current_user, new_friend):
@@ -81,3 +83,14 @@ class Friend(models.Model):
             current_user = current_user
         )
         friend.users.remove(new_friend)
+
+class Notification(models.Model):
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sender', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='receiver', on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    read = models.BooleanField(default=False)
+    post_comment =  models.ForeignKey('album.Comment', related_name='post_comments_notification', blank=True, null=True, on_delete=models.CASCADE)
+    image_comment = models.ForeignKey('album.ImageComment', related_name='image_comments_notification', blank=True, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.sender} --> {self.receiver}'

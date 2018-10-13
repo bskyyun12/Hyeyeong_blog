@@ -20,7 +20,8 @@ urlpatterns = [
     path('image/<str:operation>/<int:pk>/remove/', views.image_remove, name='image_remove'),
     path('image_comment/<int:pk>/remove/', views.image_comment_remove, name='image_comment_remove'),
 
-
+    # notification
+    path('notification/<str:operation>/<int:pk>/', views.notification, name='notification'),
     # friend
     path('connect/<str:operation>/<int:pk>/', views.change_friends, name='change_friends'),
 

@@ -2,12 +2,14 @@
 
 {% block content %}
 <div class="container">
+    <h3>
     {% if user.first_name %}
-        <h3>{{ user.first_name }}
+        {{ user.first_name }}
     {% else %}
-        <h3>{{ user }}
+        {{ user }}
     {% endif %}
-        's Profile</h3>
+        's Profile
+    </h3>
     <hr>
     <p>Email: {{ user.email }}</p>
     <p>First name: {{ user.first_name }}</p>
@@ -18,7 +20,7 @@
     <p>Phone: {{ user.userprofile.phone }}</p>
     {% if user.userprofile.image %}
         <a href="{{ user.userprofile.image.url }}">
-            <img class="profile" src="{{ user.userprofile.image.url }}" width="240"/> <br>
+            <img class="img-thumbnail" src="{{ user.userprofile.image.url }}" width="240"/> <br>
         </a>
     {% endif %}
 
@@ -26,6 +28,38 @@
     {% if user == request.user %}
     <button onclick="window.location='{% url 'accounts:edit_profile' %}'" class="btn btn-primary my-2">Edit profile</button>
     <button onclick="window.location='{% url 'accounts:change_password' %}'" class="btn btn-primary my-2">Change Password</button>
+    <br>
+    <div class="col-md-4">
+        <h3>Other People</h3>
+        {% for user in users %}
+            {% if not user in friends %}
+            <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+                {% if user.first_name %}
+                    <h6>{{ user.first_name }}({{ user.email }})</h6>
+                {% else %}
+                    <h6>{{ user.email }}</h6>
+                {% endif %}
+            </a>
+            {% endif %}
+        {% endfor %}
+        <h3 class="font-weight-bold">Friends List</h3>
+        {% for friend in friends %}
+            <div class="media">
+                <a href="{{ friend.userprofile.image.url }}">
+                    <img class="rounded-circle mr-3" src="{{ friend.userprofile.image_thumbnail.url }}" width="30" height="30"/>
+                </a>
+                <div class="media-body">
+                    <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}">
+                        {% if friend.first_name %}
+                            <h6 class="mt-1">{{ friend.first_name }}({{ friend.email }})</h6>
+                        {% else %}
+                            <h6 class="mt-1">{{ friend.email }}</h6>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
     {% else %}
         {% if not user in friends %}
             <a href="{% url 'album:change_friends' operation='add' pk=user.pk %}">
@@ -39,6 +73,9 @@
             </a>
             {% endif %}
         {% endfor %}
+        {% endif %}
+        {% if user != request.user %}
+            <button onclick="window.location='{% url 'accounts:view_profile' %}'" class="btn btn-secondary my-2">My profile</button>
         {% endif %}
     {% endif %}
     <hr>

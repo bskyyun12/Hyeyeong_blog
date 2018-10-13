@@ -6,17 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import Resize
 
-# class Entry(models.Model):
-#     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#     name = models.CharField(max_length=100)
-#     date = models.DateTimeField()
-#     description = models.TextField()
-#     created = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return f'{self.name} - {self.date}'
-
-
 # Extending the base User manager that Django uses for its original UserManager.
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""

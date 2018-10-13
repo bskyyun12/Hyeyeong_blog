@@ -1,0 +1,57 @@
+{% if user.is_authenticated %}
+<a tabindex="0" class="btn btn-secondary" role="button" data-toggle="popover"
+    data-html='true' data-placement="bottom"
+    title='
+    <div class="row">
+        <div class="{%if notifications.paginator.count is 0%}col-12{%else%}col-6{%endif%}">
+            Notification
+        </div>
+        <div class="col-6">
+            {% if notifications.has_previous %}
+                <a class="infinite-more-link" href="?page={{ notifications.previous_page_number }}"><<</a>
+            {% endif %}
+            {% if notifications.paginator.count is not 0 %}
+                ( {{notifications.number}} / {{notifications.paginator.num_pages}} )
+            {% endif %}
+            {% if notifications.has_next %}
+                <a class="infinite-more-link" href="?page={{ notifications.next_page_number }}">>></a>
+            {% endif %}
+        </div>
+    </div>
+    '
+
+    data-content='
+
+    <div class="loading" style="display: none;">
+      Loading...
+    </div>
+
+
+
+    You have {{ notifications.paginator.count }} notification{{ notifications.paginator.count|pluralize }}.
+
+    <div class="infinite-container">
+      {% for notify, date in notification_lists %}
+          {% if notify.post_comment %}
+              <a href="{% url 'album:notification' operation='post_comment' pk=notify.post_comment.pk %}">
+          {% elif notify.image_comment %}
+              <a href="{% url 'album:notification' operation='image_comment' pk=notify.image_comment.pk %}">
+          {% else %}
+          {% endif %}
+              <div class="p-2 text-dark {% if notify.read is False %}bg-gray{% else %}bg-transparent{% endif %}">
+                  {{ date }} <br>
+                  <span class="font-weight-bold text-secondary">{{notify.sender.first_name}}</span>
+                  commented on your {% if notify.image_comment %}image{% else %}post{% endif %}. <br>
+                  "{{notify.post_comment.comment|truncatechars:15}}{{notify.image_comment.comment|truncatechars:21}}"<br>
+              </div>
+              </a>
+              <hr>
+      {% endfor %}
+    </div>
+
+    '
+    >
+    <i class="fa fa-bell"></i>
+</a>
+
+{% endif %}
