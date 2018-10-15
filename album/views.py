@@ -141,16 +141,34 @@ class PostDetailView(TemplateView):
 
     def get(self, request, pk):
         post = get_object_or_404(Calendar, pk=pk)
+        comments = post.comments.filter(post=post, parent__isnull=True)
         form = CommentForm()
         users = User.objects.all()
 
-        args = {'form': form, 'post': post, 'users': users}
+        args = {
+            'form': form,
+            'post': post,
+            'users': users,
+            'comments': comments,
+        }
         return render(request, self.template_name, args)
 
     def post(self, request, pk):
         post = get_object_or_404(Calendar, pk=pk)
         form = CommentForm(request.POST)
         if form.is_valid():
+
+            parent_obj = None
+            try:
+                parent_id = int(request.POST.get('parent_id'))
+            except:
+                parent_id = None
+            if parent_id:
+                parent_obj = Comment.objects.get(id=parent_id)
+                if parent_obj:
+                    reply_comment = form.save(commit=False)
+                    reply_comment.parent = parent_obj
+
             comment = form.save(commit=False)
             comment.author = request.user
             comment.post = post
@@ -164,7 +182,10 @@ class PostDetailView(TemplateView):
             form = CommentForm() # 입력후 다시 빈칸으로 만들기
             return redirect('album:post_detail', pk=post.pk)
 
-        args =  {'form': form, 'post': post}
+        args =  {
+            'form': form,
+            'post': post,
+        }
         return render(request, self.template_name, args)
 
 class ImageDetailView(TemplateView):
@@ -172,6 +193,7 @@ class ImageDetailView(TemplateView):
 
     def get(self, request, post_pk, pk):
         image = get_object_or_404(Image, pk=pk)
+        comments = image.image_comments.filter(image=image, parent__isnull=True)
 
         try:
             previous_image = Image.objects.filter(post=image.post.pk, pk__lt=image.pk).order_by('-pk')[0]
@@ -189,6 +211,7 @@ class ImageDetailView(TemplateView):
             'previous_image': previous_image,
             'next_image': next_image,
             'image': image,
+            'comments': comments,
             'form': form,
             'users': users
         }
@@ -198,6 +221,18 @@ class ImageDetailView(TemplateView):
         image = get_object_or_404(Image, pk=pk)
         form = ImageCommentForm(request.POST)
         if form.is_valid():
+
+            parent_obj = None
+            try:
+                parent_id = int(request.POST.get('parent_id'))
+            except:
+                parent_id = None
+            if parent_id:
+                parent_obj = ImageComment.objects.get(id=parent_id)
+                if parent_obj:
+                    reply_comment = form.save(commit=False)
+                    reply_comment.parent = parent_obj
+
             comment = form.save(commit=False)
             comment.image = image
             comment.author = request.user

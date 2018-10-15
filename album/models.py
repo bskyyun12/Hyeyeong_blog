@@ -35,6 +35,7 @@ class Comment(models.Model):
     # author = models.CharField(max_length=100)
     comment = models.CharField(max_length=200)
     created_date = models.DateTimeField(default=timezone.now)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.post} - {self.comment}'
@@ -61,6 +62,7 @@ class ImageComment(models.Model):
     # author = models.CharField(max_length=100)
     comment = models.CharField(max_length=200)
     created_date = models.DateTimeField(default=timezone.now)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='image_replies', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.image} - {self.comment}'

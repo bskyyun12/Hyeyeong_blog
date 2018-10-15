@@ -39,8 +39,6 @@ def notification(request):
         for notify in notifications:
             sent_date = notify.date
             diff = today - sent_date
-            print(sent_date)
-            print(today)
 
             weeks_past = int(diff.total_seconds() / weeks)
             days_past = int(diff.total_seconds() / days)

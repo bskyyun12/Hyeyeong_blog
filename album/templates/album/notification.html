@@ -41,7 +41,14 @@
               <div class="p-2 text-dark {% if notify.read is False %}bg-gray{% else %}bg-transparent{% endif %}">
                   {{ date }} <br>
                   <span class="font-weight-bold text-secondary">{{notify.sender.first_name}}</span>
-                  commented on your {% if notify.image_comment %}image{% else %}post{% endif %}. <br>
+                  {% if notify.post_comment.parent or notify.image_comment.parent %}
+                  replied on your comment.
+                  {% elif notify.post_comment %}
+                  commented on your post.
+                  {% elif notify.image_comment %}
+                  commented on your image.
+                  {% endif %}
+                  <br>
                   "{{notify.post_comment.comment|truncatechars:15}}{{notify.image_comment.comment|truncatechars:21}}"<br>
               </div>
               </a>

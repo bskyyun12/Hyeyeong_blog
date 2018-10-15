@@ -60,8 +60,8 @@
         <button type="submit" class="btn btn-primary btn-sm my-2">Add Comment</button>
         <hr>
     </form>
-    {% for comment in image.image_comments.all %}
-        <div class="media">
+    {% for comment in comments %}
+        <div class="media pb-2">
             {% for user in users %}
             {% if user == comment.author %}
             <a href="{{ user.userprofile.image.url }}">
@@ -75,7 +75,7 @@
                                 <h5 class="mt-0 font-weight-bold">{{ comment.author }}</h5>
                             {% endif %}
                         </a>
-                {{ comment.comment }}
+                <h5>{{ comment.comment }}</h5>
             </div>
             {% endif %}
             {% endfor %}
@@ -83,6 +83,45 @@
             <a class="btn-sm text-danger" href="{% url 'album:image_comment_remove' pk=comment.pk %}">Delete</a>
             {% endif %}
         </div>
+
+        {% for reply in comment.image_replies.all %}
+        <div class="media pl-5 pb-2">
+            {% for user in users %}
+                {% if user == reply.author %}
+                <a href="{{ user.userprofile.image.url }}">
+                            <img class="rounded-circle mr-3" src="{{ user.userprofile.image_thumbnail.url }}" width="40" height="40"/>
+                        </a>
+                <div class="media-body">
+                    <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+                        {% if user.first_name %}
+                            <h6 class="mt-0 font-weight-bold">{{ user.first_name }}</h6>
+                        {% else %}
+                            <h6 class="mt-0 font-weight-bold">{{ reply.author }}</h6>
+                        {% endif %}
+                    </a>
+                    <h6>{{ reply.comment }}</h6>
+                </div>
+                {% endif %}
+            {% endfor %}
+            {% if user.is_superuser or user == reply.author %}
+                <a class="btn-sm text-danger" href="{% url 'album:image_comment_remove' pk=reply.pk %}">Delete</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <form action="." method="post" autocomplete="off">
+            {% csrf_token %}
+            {{ form.errors }}
+            <!-- Hidden input for parent comment.id -->
+            <div class="input-group mb-3 pl-5">
+                <input type="text" name="comment" maxlength="200" required id="id_comment" class="form-control" placeholder="Write a reply..." aria-describedby="button-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit" id="button-addon2">Reply</button>
+                </div>
+            </div>
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+        </form>
+
         <hr>
     {% empty %}
         <p>No comments here yet :(</p>
