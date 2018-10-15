@@ -4,6 +4,7 @@ __pycache__
 myvenv
 db.sqlite3
 /media
-/migrations
+accounts/migrations
+album/migrations
 .DS_Store
 .env
