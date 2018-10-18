@@ -11,51 +11,138 @@ from .forms import (
     ImageForm,
     ImageCommentForm,
 )
-from mysite.settings import TEMPLATES
+try:
+    from django.utils import simplejson as json
+except ImportError:
+    import json
+from django.http import JsonResponse
+
+import re, calendar
+
+@login_required
+def calendar_view(request):
+    posts = Calendar.objects.all()
+    calendar.setfirstweekday(6)
+
+    year_list = [
+        'first_index',
+        'JANUARY',
+        'FEBRUARY',
+        'MARCH',
+        'APRIL',
+        'MAY',
+        'JUNE',
+        'JULY',
+        'AUGUST',
+        'SEPTEMBER',
+        'OCTOBER',
+        'NOVEMBER',
+        'DECEMBER'
+    ]
+    today = datetime.now().date()
+    year_month_str = request.GET.get('year_month', '')
+    if year_month_str:
+        year_month = datetime.strptime(year_month_str, "%Y-%m").date()
+    else:
+        year_month = datetime.today()
+    year = year_month.year # example output: 2018
+    month = year_month.month # example output: 10
+    month_alphabet = year_list[month] # example output: October
+
+    current_year_month = datetime.strptime((str(datetime.today().year) +"-"+ str(datetime.today().month)), "%Y-%m").date()
+
+    month_calendar = calendar.monthcalendar(year, month)
+
+    weeks = []
+    # days = []
+
+    for w in range(0, len(month_calendar)):
+        week = month_calendar[w] # each week include its days for the given month. ex) [0, 1, 2, 3, 4, 5, 6]
+        weeks.append(week)
+        # for x in range(7):
+        #     day = week[x]
+        #     days.append(day)
+
+
+    pre_month = (year_month.month - 1) % 12 or 12
+    next_month = (year_month.month + 1) % 12 or 12
+    next_year_month = str(year_month.year) + "-" + str(next_month)
+    pre_year_month = str(year_month.year) + "-" + str(pre_month)
+    if pre_month is 12:
+        pre_year_month = str(year_month.year - 1) + "-" + str(pre_month)
+    elif next_month is 1:
+        next_year_month = str(year_month.year + 1) + "-" + str(next_month)
+
+    pre_year_month = datetime.strptime(pre_year_month, "%Y-%m").date()
+    next_year_month = datetime.strptime(next_year_month, "%Y-%m").date()
+
+
+    args = {
+        'year_month': year_month,
+        'current_year_month': current_year_month,
+        'month_alphabet': month_alphabet,
+        'pre_year_month': pre_year_month,
+        'next_year_month': next_year_month,
+        'weeks': weeks,
+        'posts': posts,
+        'today': today,
+    }
+    return render(request, 'album/calendar_view.html', args)
 
 class CalendarView(TemplateView):
     template_name = 'album/home.html'
 
-    # TEMPLATES[0]['OPTIONS']['context_processors'].insert(0, "album.context_processors.notification")
     def get(self, request):
-
-        # notifications = Notification.objects.filter(receiver=request.user).order_by('read', '-date')
-        #
-        # page = request.GET.get('page', 1)
-        # paginator = Paginator(notifications, 5)
-        # try:
-        #     notifications = paginator.page(page)
-        # except PageNotAnInteger:
-        #     notifications = paginator.page(1)
-        # except EmptyPage:
-        #     notifications = paginator.page(paginator.num_pages)
-
-
 
         posts = Calendar.objects.all().order_by('-date')
         thumbnail = Image.objects.all()
         form = CalendarForm(request.POST)
 
         # 검색 코드
-        title = request.GET.get('title', '')
-        description = request.GET.get('description', '')
+        year_month =''
         year_month_str = request.GET.get('year_month', '')
         emoticon = request.GET.get('emoticon', '')
-        if year_month_str:  # 날짜 검색했을 경우 -> year_month = 검색한 날짜
+        option = request.GET.get('option', '')
+        search_content = request.GET.get('search_content', '')
+
+        if year_month_str and option == 'title':
+            # date only or date and title
             year_month = datetime.strptime(year_month_str, "%Y-%m").date()
-        else:               # 날짜 검색안했을 경우 -> year_month = 현재 날짜
-            year_month = datetime.strptime((str(datetime.today().year) +"-"+ str(datetime.today().month)), "%Y-%m").date()
-        posts = posts.filter(date__year=year_month.year, date__month=year_month.month, emoticon__contains=emoticon, title__contains=title, description__contains=description)
+            posts = posts.filter(date__year=year_month.year, date__month=year_month.month, title__contains=search_content, emoticon__contains=emoticon)
+        elif year_month_str and option == 'content':
+            # date and content
+            year_month = datetime.strptime(year_month_str, "%Y-%m").date()
+            posts = posts.filter(date__year=year_month.year, date__month=year_month.month, description__contains=search_content, emoticon__contains=emoticon)
+        elif option == 'title' and search_content:
+            # title only
+            posts = posts.filter(title__contains=search_content, emoticon__contains=emoticon)
+        elif option == 'content' and search_content:
+            # content only
+            posts = posts.filter(description__contains=search_content, emoticon__contains=emoticon)
+        elif emoticon:
+            # emoticon only
+            posts = posts.filter(emoticon__contains=emoticon)
+        else:
+            # Search nothing : disply posts with current year and month
+            if year_month_str:
+                year_month = datetime.strptime(year_month_str, "%Y-%m").date()
+            else:
+                year_month = datetime.strptime((str(datetime.today().year) +"-"+ str(datetime.today().month)), "%Y-%m").date()
+            posts = posts.filter(date__year=year_month.year, date__month=year_month.month)
 
         # 이전달 / 다음달 구하기
-        pre_month = (year_month.month - 1) % 12 or 12
-        next_month = (year_month.month + 1) % 12 or 12
-        next_year_month = str(year_month.year) + "-" + str(next_month)
-        pre_year_month = str(year_month.year) + "-" + str(pre_month)
-        if pre_month is 12:
-            pre_year_month = str(year_month.year - 1) + "-" + str(pre_month)
-        elif next_month is 1:
-            next_year_month = str(year_month.year + 1) + "-" + str(next_month)
+        next_year_month = ''
+        pre_year_month = ''
+        if year_month:
+            pre_month = (year_month.month - 1) % 12 or 12
+            next_month = (year_month.month + 1) % 12 or 12
+            next_year_month = str(year_month.year) + "-" + str(next_month)
+            pre_year_month = str(year_month.year) + "-" + str(pre_month)
+            if pre_month is 12:
+                pre_year_month = str(year_month.year - 1) + "-" + str(pre_month)
+            elif next_month is 1:
+                next_year_month = str(year_month.year + 1) + "-" + str(next_month)
+
 
         args = {
             # 'notifications': notifications,
@@ -63,7 +150,8 @@ class CalendarView(TemplateView):
             'year_month': year_month,
             'next_year_month': next_year_month,
             'pre_year_month': pre_year_month,
-            'title': title,
+            'option': option,
+            'search_content': search_content,
             'emoticon': emoticon,
             'posts': posts,
             'thumbnail': thumbnail,
@@ -74,7 +162,7 @@ class CalendarView(TemplateView):
         return render(request, self.template_name)
 
 @login_required
-def post_new(request):
+def post_new(request, date):
     if request.method == 'POST':
         form = CalendarForm(request.POST)
         if form.is_valid():
@@ -94,7 +182,8 @@ def post_new(request):
 
     args = {
         'form': form,
-        'today':datetime.now(),
+        'date': date,
+        'today': datetime.now(),
     }
     return render(request, 'album/calendar_new.html', args)
 
@@ -177,6 +266,7 @@ class PostDetailView(TemplateView):
                 Notification.objects.create(
                     receiver=post.author,
                     sender=request.user,
+                    post=comment.post,
                     post_comment=comment,
                 ).save()
             form = CommentForm() # 입력후 다시 빈칸으로 만들기
@@ -241,6 +331,7 @@ class ImageDetailView(TemplateView):
                 Notification.objects.create(
                     receiver=image.post.author,
                     sender=request.user,
+                    image=comment.image,
                     image_comment=comment,
                 ).save()
             form = ImageCommentForm() # 입력후 다시 빈칸으로 만들기
@@ -286,6 +377,9 @@ def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     if request.user.is_superuser or comment.author == request.user:
         comment.delete()
+        Notification.objects.filter(
+            post_comment=comment,
+        ).delete()
     return redirect('album:post_detail', pk=comment.post.pk)
 
 @login_required
@@ -293,6 +387,9 @@ def image_comment_remove(request, pk):
     comment = get_object_or_404(ImageComment, pk=pk)
     if request.user.is_superuser or comment.author == request.user:
         comment.delete()
+        Notification.objects.filter(
+            image_comment=comment,
+        ).delete()
     return redirect('album:image_detail', post_pk=comment.image.post.pk, pk=comment.image.pk)
 
 @login_required
@@ -305,6 +402,14 @@ def notification(request, operation, pk):
         image_comment = get_object_or_404(ImageComment, pk=pk)
         notification = Notification.objects.filter(image_comment=image_comment).update(read=True)
         return redirect('album:image_detail', post_pk=image_comment.image.post.pk, pk=image_comment.image.pk)
+    elif operation == 'post_like':
+        post = get_object_or_404(Calendar, pk=pk)
+        notification = Notification.objects.filter(post=post).update(read=True)
+        return redirect('album:post_detail', pk=post.pk)
+    elif operation == 'image_like':
+        image = get_object_or_404(Image, pk=pk)
+        notification = Notification.objects.filter(image=image).update(read=True)
+        return redirect('album:image_detail', post_pk=image.post.pk, pk=image.pk)
 
 @login_required
 def change_friends(request, operation, pk):
@@ -314,3 +419,65 @@ def change_friends(request, operation, pk):
     elif operation == 'remove':
         Friend.lose_friend(request.user, new_friend)
     return redirect('accounts:view_profile_with_pk', pk=new_friend.pk)
+
+
+
+@login_required
+def like(request, operation):
+    if request.method == 'POST':
+        if operation == 'post':
+            user = request.user # 로그인한 유저를 가져온다.
+            obj_id = request.POST.get('pk', None)
+            obj = Calendar.objects.get(pk = obj_id) #해당 오브젝트를 가져온다.
+
+            if obj.likes.filter(id = user.id).exists(): #이미 해당 유저가 likes컬럼에 존재하면
+                obj.likes.remove(user) #likes 컬럼에서 해당 유저를 지운다.
+                message = 'You disliked this'
+                if obj.author != request.user:
+                    Notification.objects.filter(
+                        post=obj,
+                    ).delete()
+            else:
+                obj.likes.add(user)
+                message = 'You liked this'
+                if obj.author != request.user:
+                    Notification.objects.create(
+                        receiver=obj.author,
+                        sender=request.user,
+                        post=obj,
+                        like=True
+                    ).save()
+
+        elif operation == 'image':
+            user = request.user # 로그인한 유저를 가져온다.
+            obj_id = request.POST.get('pk', None)
+            obj = Image.objects.get(pk = obj_id) #해당 오브젝트를 가져온다.
+
+            if obj.likes.filter(id = user.id).exists(): #이미 해당 유저가 likes컬럼에 존재하면
+                obj.likes.remove(user) #likes 컬럼에서 해당 유저를 지운다.
+                message = 'You disliked this'
+                if obj.post.author != request.user:
+                    Notification.objects.filter(
+                        image=obj,
+                    ).delete()
+            else:
+                obj.likes.add(user)
+                message = 'You liked this'
+                if obj.post.author != request.user:
+                    Notification.objects.create(
+                        receiver=obj.post.author,
+                        sender=request.user,
+                        image=obj,
+                        like=True
+                    ).save()
+
+
+        likes_count = obj.likes.count()
+        user_like = obj.likes.filter(id = user.id).exists()
+
+    context = {
+        'likes_count' : likes_count,
+        'message' : message,
+        'user_like' : user_like,
+    }
+    return JsonResponse(context)

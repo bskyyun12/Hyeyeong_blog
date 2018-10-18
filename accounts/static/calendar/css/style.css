@@ -77,7 +77,7 @@
 }
 
 @media screen and (max-width: 530px) {
-.home_date {
+.calendar_year_month {
     font-size: 14px;
   }
 }

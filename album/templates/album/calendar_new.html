@@ -14,35 +14,28 @@
     <div id="fileList"></div>
 
     <label>{{ form.title.label }}{{ form.title.errors }}</label>
-    <input placeholder="{{  form.title.label  }}" name="title" class="form-control" required>
+    <input placeholder="{{  form.title.label  }}" name="title" class="form-control" required maxlength="20">
 
     <label>{{ form.description.label }}{{ form.description.errors }}</label>
-    <input placeholder="{{ form.description.label }}" name="description" class="form-control" required>
+    <input placeholder="{{ form.description.label }}" name="description" class="form-control" required maxlength="300">
 
     <label>{{ form.date.label }}{{ form.date.errors }}</label>
-    <input type="text" id="datepicker" placeholder="{{ form.date.label }}" value="{{ today|date:"Y-m-d" }}" name="date" class="form-control" required>
+    {% if date %}
+        <input type="text" id="datepicker" placeholder="{{ form.date.label }}" value="{{ date }}" name="date" class="form-control" required>
+    {% else %}
+        <input type="text" id="datepicker" placeholder="{{ form.date.label }}" value="{{ today|date:"Y-m-d" }}" name="date" class="form-control" required>
+    {% endif %}
+
 
     <label>{{ form.emoticon.label }}{{ form.emoticon.errors }}</label>
     <div class="row">
         {% for value, text in form.emoticon.field.choices %}
         <div class="col-3 col-sm-2 col-lg-1">
-            <input id="id_emoticons_{{ forloop.counter0 }}" name="{{ form.emoticon.name }}" type="checkbox" value="{{ value }}">
-            <label for="checkbox"><img class="img-responsive" src="/media/emoticons/{{value}}.png" style="width: 100%; display: block;"> {{text}}</label>
+            <input id="id_emoticons_{{ forloop.counter0 }}" name="{{ form.emoticon.name }}" type="checkbox" value="{{ value }}" {% if forloop.counter == 1 %} checked {% endif %}>
+            <label for="id_emoticons_{{ forloop.counter0 }}"><img class="img-responsive" src="/media/emoticons/{{value}}.png" style="width: 100%; display: block;"> {{text}}</label>
         </div>
         {% endfor %}
     </div>
-
-    <!-- <label for="id_emoticon">Emoticons</label>
-    {% for choice in form.emoticon.field.choices %}
-        <li>
-            <input type="checkbox" multiple name="emoticon" value="{{choice.1}}"
-                {% ifequal form.emoticon.data choice.0 %}
-                checked="checked"
-                {% endifequal %}/>
-            <label for="checkbox"><img src="/media/emoticons/{{choice.1}}.png" style="width:50;"> {{choice.1}}</label>
-        </li>
-    {% endfor %} -->
-
     <hr>
     <button type="submit" class="save btn btn-primary">Upload</button>
 </form>
@@ -83,6 +76,10 @@
         if ($('input[type=checkbox]:checked').length > 3) {
             $(this).prop('checked', false);
             alert("You can't choose more than 3.");
+        }
+        if ($('input[type=checkbox]:checked').length < 1) {
+            $(this).prop('checked', true);
+            alert("You should choose at least 1 emoticon.");
         }
     });
 </script>

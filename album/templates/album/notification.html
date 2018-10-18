@@ -26,39 +26,58 @@
       Loading...
     </div>
 
-
-
-    You have {{ notifications.paginator.count }} notification{{ notifications.paginator.count|pluralize }}.
+    Total {{ notifications.paginator.count }} notification{{ notifications.paginator.count|pluralize }}.
 
     <div class="infinite-container">
-      {% for notify, date in notification_lists %}
-          {% if notify.post_comment %}
-              <a href="{% url 'album:notification' operation='post_comment' pk=notify.post_comment.pk %}">
-          {% elif notify.image_comment %}
-              <a href="{% url 'album:notification' operation='image_comment' pk=notify.image_comment.pk %}">
-          {% else %}
-          {% endif %}
-              <div class="p-2 text-dark {% if notify.read is False %}bg-gray{% else %}bg-transparent{% endif %}">
-                  {{ date }} <br>
-                  <span class="font-weight-bold text-secondary">{{notify.sender.first_name}}</span>
-                  {% if notify.post_comment.parent or notify.image_comment.parent %}
-                  replied on your comment.
-                  {% elif notify.post_comment %}
-                  commented on your post.
-                  {% elif notify.image_comment %}
-                  commented on your image.
-                  {% endif %}
-                  <br>
-                  "{{notify.post_comment.comment|truncatechars:15}}{{notify.image_comment.comment|truncatechars:21}}"<br>
-              </div>
-              </a>
-              <hr>
-      {% endfor %}
+        {% for notify, date in notification_lists %}
+            {% if notify.post_comment %}
+                <a href="{% url 'album:notification' operation='post_comment' pk=notify.post_comment.pk %}">
+            {% elif notify.image_comment %}
+                <a href="{% url 'album:notification' operation='image_comment' pk=notify.image_comment.pk %}">
+            {% elif notify.post %}
+                <a href="{% url 'album:notification' operation='post_like' pk=notify.post.pk %}">
+            {% elif notify.image %}
+                <a href="{% url 'album:notification' operation='image_like' pk=notify.image.pk %}">
+            {% else %}
+            {% endif %}
+            <div class="p-2 text-dark {% if notify.read is False %}bg-gray{% else %}bg-transparent{% endif %}">
+                {{ date }} <br>
+                <span class="font-weight-bold text-secondary">{{notify.sender.first_name}}</span>
+                {% if notify.post_comment.parent or notify.image_comment.parent %}
+                    replied on your comment.
+                {% elif notify.post_comment %}
+                    commented on your post.
+                {% elif notify.image_comment %}
+                    commented on your image.
+                {% elif notify.like == True %}
+                    likes your
+                    {% if notify.post %}
+                        post.<br>"{{notify.post.title}}"
+                    {% else %}
+                        image.
+                        {% if notify.image.description %}
+                            <br>"{{notify.image.description}}"
+                        {% endif %}
+                    {% endif %}
+
+                {% endif %}
+                {% if notify.post_comment or notify.image_comment %}
+                    <br>
+                    "{{notify.post_comment.comment|truncatechars:15}}{{notify.image_comment.comment|truncatechars:21}}"<br>
+                {% endif %}
+            </div>
+            </a>
+            <hr>
+        {% endfor %}
     </div>
 
     '
     >
-    <i class="fa fa-bell"></i>
+    {% if notifications.paginator.count != 0 and unread_count != 0 %}
+        <i class="fa fa-bell"></i> <span class="badge badge-primary badge-pill">{{ unread_count }}</span>
+    {% else %}
+        <i class="fa fa-bell"></i>
+    {% endif %}
 </a>
 
 {% endif %}

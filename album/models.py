@@ -24,9 +24,13 @@ class Calendar(models.Model):
     description = models.TextField()
     date = models.DateField()
     emoticon = MultiSelectField(choices=EMOTICONS, max_choices=3)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='likes')
 
     def __str__(self):
         return self.title
+
+    def total_likes(self):
+        return self.likes.count()
 
 # Calendar comment
 class Comment(models.Model):
@@ -50,9 +54,13 @@ class Image(models.Model):
 		processors = [ResizeToFill(700, 700)], # 처리할 작업 목룍
 		format = 'JPEG',					# 최종 저장 포맷
 		options = {'quality': 60})  		# 저장 옵션
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='image_likes')
 
     def __str__(self):
         return f'{self.post.title}\'s image'
+
+    def total_likes(self):
+        return self.likes.count()
 
 
 # Calendar comment
@@ -91,8 +99,11 @@ class Notification(models.Model):
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='receiver', on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
     read = models.BooleanField(default=False)
+    post = models.ForeignKey('album.Calendar', related_name='post_notification', blank=True, null=True, on_delete=models.CASCADE)
     post_comment =  models.ForeignKey('album.Comment', related_name='post_comments_notification', blank=True, null=True, on_delete=models.CASCADE)
+    image = models.ForeignKey('album.Image', related_name='image_notification', blank=True, null=True, on_delete=models.CASCADE)
     image_comment = models.ForeignKey('album.ImageComment', related_name='image_comments_notification', blank=True, null=True, on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.sender} --> {self.receiver}'

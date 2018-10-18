@@ -8,8 +8,10 @@ from album.views import (
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
+    path('like/<str:operation>/', views.like, name='like'),
+
     path('', login_required(CalendarView.as_view()), name='home'),
-    path('post/new/', views.post_new, name='post_new'),
+    path('post/new/<str:date>/', views.post_new, name='post_new'),
     path('post/<int:pk>/', login_required(PostDetailView.as_view()), name='post_detail'),
     path('post/<int:pk>/edit/', views.post_edit, name='post_edit'),
     path('post/<int:pk>/remove/', views.post_remove, name='post_remove'),
@@ -24,5 +26,9 @@ urlpatterns = [
     path('notification/<str:operation>/<int:pk>/', views.notification, name='notification'),
     # friend
     path('connect/<str:operation>/<int:pk>/', views.change_friends, name='change_friends'),
+
+
+    # test
+    path('calendar_view/', views.calendar_view, name='calendar_view'),
 
 ]

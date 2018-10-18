@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+    <div class="row bg-light">
+        <div class="col-md-8 border-right">
+            <!-- calendar -->
+            <div class="calendar p-2">
+                <!-- calendar_header -->
+                <div class="p-3">
+                    <form class="row justify-content-around m-0" action="" method="get">
+                        <button type="submit" class="btn btn-primary" name="year_month"  value="{{pre_year_month|date:'Y-m'}}"><i class="fa fa-chevron-left" style="font-size:22px"></i></button>
+                        <h3 class="m-1">{{month_alphabet}}, {{year_month.year}}</h3>
+                        <button type="submit" class="btn btn-primary" name="year_month"  value="{{next_year_month|date:'Y-m'}}"><i class="fa fa-chevron-right" style="font-size:22px"></i></button>
+                    </form>
+                </div>
+
+                <!-- calendar_weekdays -->
+                <div class="row mr-0 ml-0 text-center text-danger" class="">
+                    <div class="col p-0 ml-1 border bg-gray rounded">Sun</div>
+                    <div class="col p-0 ml-1 border bg-gray rounded">Mon</div>
+                    <div class="col p-0 ml-1 border bg-gray rounded">Tue</div>
+                    <div class="col p-0 ml-1 border bg-gray rounded">Wed</div>
+                    <div class="col p-0 ml-1 border bg-gray rounded">Thu</div>
+                    <div class="col p-0 ml-1 text-center text-danger border bg-gray rounded">Fri</div>
+                    <div class="col p-0 ml-1 text-center text-danger border bg-gray rounded">Sat</div>
+                </div>
+                <!-- calendar_content -->
+                {% for week in weeks %}
+                <div class="row mr-0 ml-0 mt-1">
+                    {% for day in week %}
+                        {% if year_month|date:"Y-m"|add_date:day|has_post:posts %}
+                            <div class="calendar_date col p-0 ml-1 text-right border bg-gray rounded">
+                                {% for post in posts %}
+                                    <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
+                                        {% if post.date|date:"Y-m-d" == year_month|date:"Y-m"|add_date:day %}
+                                            {% for thumb in post.images.all %}
+                                                {% if forloop.counter == 1 %}
+                                                    <img class="rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        <div class="text-white" style="position: absolute; top: 0; right: 3;">{{day}}</div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                        <a href="{% url 'album:post_new' date=year_month|date:'Y-m'|add_date:day %}" class="col p-0 ml-1 text-right border bg-gray rounded">
+                            <div class="calendar_date text-secondary">{{day}}</div>
+                        </a>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <hr>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="container card">
+                {% for post in posts %}
+                    {% if post.date|date:"Y-m-d" == today|subtract_date:7|date:"Y-m-d" %}
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Post a week ago!</h4>
+                        <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
+                            <div class="post_week_ago">
+                                <h6 class="text-center">Title: {{post.title}}</h6>
+                                {% for thumb in post.images.all %}
+                                    {% if forloop.counter == 1 %}
+                                        <img class="img-thumbnail rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if post.date|date:"Y-m-d" == today|subtract_month:1|date:"Y-m-d" %}
+                    <div class="card-body">
+                        <h4 class="text-center">Post a month ago!</h4>
+                        <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
+                            <div class="post_month_ago">
+                                <h6 class="card-title text-center">Title: {{post.title}}</h6>
+                                {% for thumb in post.images.all %}
+                                    {% if forloop.counter == 1 %}
+                                        <img class="img-thumbnail rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if post.date|date:"Y-m-d" == today|subtract_year:1|date:"Y-m-d" %}
+                    <div class="card-body">
+                        <h4 class="text-center">Post a year ago!</h4>
+                        <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
+                            <div class="post_month_ago">
+                                <h6 class="card-title text-center">Title: {{post.title}}</h6>
+                                {% for thumb in post.images.all %}
+                                    {% if forloop.counter == 1 %}
+                                        <img class="img-thumbnail rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    var resizeId;
+    $(window).resize(function() {
+    clearTimeout(resizeId);
+    resizeId = setTimeout(doneResizing, 200);
+    });
+
+    function doneResizing(){
+        location.reload();
+    }
+
+    $('.calendar').each(function(){
+     var $calendar_date = $('.calendar_date',this);
+     var maxHeight = Math.max.apply(Math, $calendar_date.map(function(){
+         return $(this).height();
+     }).get());
+     if (maxHeight < 25) {
+         maxHeight = 40
+     }
+
+     for (var i = 0; i < $(".calendar_date").length; i++) {
+         if (($(".calendar_date")[i]).innerHTML == 0) {
+             ($(".calendar_date")[i]).innerHTML = '-'
+         }
+     }
+
+     $calendar_date.height(maxHeight);
+    });
+
+
+</script>
+{% endblock %}

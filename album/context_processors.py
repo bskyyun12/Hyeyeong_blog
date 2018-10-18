@@ -14,6 +14,7 @@ def pluralize(num, word):
 def notification(request):
     notifications =[]
     notification_lists = []
+    unread_count = ''
     if request.user.is_authenticated:
 
         notifications = Notification.objects.filter(receiver=request.user).order_by('read', '-date')
@@ -25,7 +26,6 @@ def notification(request):
             notifications = paginator.page(1)
         except EmptyPage:
             notifications = paginator.page(paginator.num_pages)
-
 
         date_notify = []
         minutes = 60
@@ -61,7 +61,11 @@ def notification(request):
                     date_notify.append(pluralize(seconds_past, 'second')+' ago')
 
         notification_lists = zip(notifications, date_notify)
+
+        unread_count = Notification.objects.filter(read=False).count()
+
     return {
         'notifications': notifications,
         'notification_lists': notification_lists,
+        'unread_count': unread_count,
     }
