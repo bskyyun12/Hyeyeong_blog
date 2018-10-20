@@ -12,7 +12,6 @@ urlpatterns = [
 
     path('', login_required(CalendarView.as_view()), name='home'),
     path('post/new/<str:date>/', views.post_new, name='post_new'),
-    path('post/move/<str:date>/<str:operation>/', views.move_post, name='move_post'),
     path('post/<int:pk>/', login_required(PostDetailView.as_view()), name='post_detail'),
     path('post/<int:pk>/edit/', views.post_edit, name='post_edit'),
     path('post/<int:pk>/remove/', views.post_remove, name='post_remove'),

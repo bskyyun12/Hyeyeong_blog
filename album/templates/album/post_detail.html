@@ -10,8 +10,8 @@
         <!-- 삭제버튼 -->
         <a class="btn btn-danger btn-sm" href="{% url 'album:post_remove' pk=post.pk %}">Delete Post</a>
 
-        <a class="btn btn-danger btn-sm" href="{% url 'album:move_post' date=post.date operation='prev' %}">Prev Day</a>
-        <a class="btn btn-danger btn-sm" href="{% url 'album:move_post' date=post.date operation='next' %}">Next Day</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'album:post_detail' pk=previous_post.pk %}">Prev Day</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'album:post_detail' pk=next_post.pk %}">Next Day</a>
         {% endif %}
         <hr>
 

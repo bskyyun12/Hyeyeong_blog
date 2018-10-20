@@ -249,9 +249,23 @@ class PostDetailView(TemplateView):
         form = CommentForm()
         users = User.objects.all()
 
+        posts = Calendar.objects.all()
+        date = post.date
+        try:
+            previous_post = posts.filter(date__lt=date).order_by('-date')[0]
+        except:
+            previous_post = post
+        try:
+            next_post = posts.filter(date__gt=date).order_by('date')[0]
+        except:
+            next_post = post
+
+
         args = {
             'form': form,
             'post': post,
+            'previous_post': previous_post,
+            'next_post': next_post,
             'users': users,
             'comments': comments,
         }
@@ -301,7 +315,7 @@ class ImageDetailView(TemplateView):
         except:
             previous_image = Image.objects.filter(post=image.post.pk).last()
         try:
-            next_image = Image.objects.filter(post=image.post.pk,pk__gt=image.pk).order_by('pk')[0]
+            next_image = Image.objects.filter(post=image.post.pk, pk__gt=image.pk).order_by('pk')[0]
         except:
             next_image = Image.objects.filter(post=image.post.pk).first()
 
@@ -492,22 +506,3 @@ def like(request, operation):
         'user_like' : user_like,
     }
     return JsonResponse(context)
-
-@login_required
-def move_post(request, date, operation):
-    posts = Calendar.objects.all()
-
-    for i in range(len(posts)):
-        i += 1
-        if operation == 'next':
-            calculated_date = add_date(date, i)
-        elif operation == 'prev':
-            calculated_date = subtract_date(date, i)
-
-        post = posts.filter(date=calculated_date)
-        if post.exists():
-            post = get_object_or_404(Calendar, date=calculated_date)
-            return redirect('album:post_detail', pk=post.pk)
-        else:
-            post = get_object_or_404(Calendar, date=date)
-    return redirect('album:post_detail', pk=post.pk)

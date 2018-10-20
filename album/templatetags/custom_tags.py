@@ -61,6 +61,7 @@ def zip_lists(a, b):
 @register.filter(name='has_post')
 def has_post(date_str, posts):
     date=''
+    has_post = False
     try:
         date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     except:
