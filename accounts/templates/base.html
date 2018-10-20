@@ -37,6 +37,9 @@
                             </ul>
                         </div>
                         <div class="">
+                            <button onclick="window.location='{% url 'album:calendar_view' %}'" type="button" class="btn btn-secondary">
+                                <i class="fa fa-calendar"></i>
+                            </button>
                             {% include 'album/notification.html' %}
                             {% if user.is_authenticated %}
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">

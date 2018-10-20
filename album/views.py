@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Calendar, Image, Comment, Friend, ImageComment, Notification
 from accounts.models import User
 from django.utils import timezone
-from datetime import datetime
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from .forms import (
@@ -16,8 +15,10 @@ try:
 except ImportError:
     import json
 from django.http import JsonResponse
-
+from datetime import datetime
 import re, calendar
+from .notification import comment_send_notification, imageComment_send_notification
+from .templatetags.custom_tags import add_date, subtract_date, subtract_month, subtract_year
 
 @login_required
 def calendar_view(request):
@@ -40,6 +41,7 @@ def calendar_view(request):
         'DECEMBER'
     ]
     today = datetime.now().date()
+
     year_month_str = request.GET.get('year_month', '')
     if year_month_str:
         year_month = datetime.strptime(year_month_str, "%Y-%m").date()
@@ -167,16 +169,30 @@ def post_new(request, date):
         form = CalendarForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
-            post.save()
+            # check if the post exists on selected date
+            # if so, send msg to home.html
+            try:
+                post = get_object_or_404(Calendar, date=post.date)
+                msg = 'Post on selected date already exists.'
+                args = {
+                    'post' : post,
+                    'msg': msg,
+                }
 
-            for img in request.FILES.getlist('image'):
-                Image.objects.create(
-                    post=post,
-                    image=img
-                ).save()
+                return render(request, 'album/home.html', args)
+            # if the post doesn't exist on selected date
+            # create new post on that date
+            except:
+                post.author = request.user
+                post.save()
 
-            return redirect('album:home')
+                for img in request.FILES.getlist('image'):
+                    Image.objects.create(
+                        post=post,
+                        image=img
+                    ).save()
+
+                return redirect('album:calendar_view')
     else:
         form = CalendarForm()
 
@@ -217,13 +233,12 @@ def post_edit(request, pk):
     else:
         return redirect('album:home')
 
-
 @login_required
 def post_remove(request, pk):
     post = get_object_or_404(Calendar, pk=pk)
     if request.user.is_superuser or post.author == request.user:
         post.delete()
-    return redirect('album:home')
+    return redirect('album:calendar_view')
 
 class PostDetailView(TemplateView):
     template_name = 'album/post_detail.html'
@@ -262,13 +277,9 @@ class PostDetailView(TemplateView):
             comment.author = request.user
             comment.post = post
             comment.save()
-            if post.author != request.user:
-                Notification.objects.create(
-                    receiver=post.author,
-                    sender=request.user,
-                    post=comment.post,
-                    post_comment=comment,
-                ).save()
+
+            comment_send_notification(request, post, comment, parent_id)
+
             form = CommentForm() # 입력후 다시 빈칸으로 만들기
             return redirect('album:post_detail', pk=post.pk)
 
@@ -323,17 +334,13 @@ class ImageDetailView(TemplateView):
                     reply_comment = form.save(commit=False)
                     reply_comment.parent = parent_obj
 
-            comment = form.save(commit=False)
-            comment.image = image
-            comment.author = request.user
-            comment.save()
-            if image.post.author != request.user:
-                Notification.objects.create(
-                    receiver=image.post.author,
-                    sender=request.user,
-                    image=comment.image,
-                    image_comment=comment,
-                ).save()
+            image_comment = form.save(commit=False)
+            image_comment.image = image
+            image_comment.author = request.user
+            image_comment.save()
+
+            imageComment_send_notification(request, image, image_comment, parent_id)
+
             form = ImageCommentForm() # 입력후 다시 빈칸으로 만들기
             return redirect('album:image_detail', post_pk=image.post.pk, pk=image.pk)
 
@@ -420,8 +427,6 @@ def change_friends(request, operation, pk):
         Friend.lose_friend(request.user, new_friend)
     return redirect('accounts:view_profile_with_pk', pk=new_friend.pk)
 
-
-
 @login_required
 def like(request, operation):
     if request.method == 'POST':
@@ -435,7 +440,10 @@ def like(request, operation):
                 message = 'You disliked this'
                 if obj.author != request.user:
                     Notification.objects.filter(
+                        receiver=obj.author,
+                        sender=request.user,
                         post=obj,
+                        like=True
                     ).delete()
             else:
                 obj.likes.add(user)
@@ -458,7 +466,10 @@ def like(request, operation):
                 message = 'You disliked this'
                 if obj.post.author != request.user:
                     Notification.objects.filter(
+                        receiver=obj.post.author,
+                        sender=request.user,
                         image=obj,
+                        like=True
                     ).delete()
             else:
                 obj.likes.add(user)
@@ -481,3 +492,22 @@ def like(request, operation):
         'user_like' : user_like,
     }
     return JsonResponse(context)
+
+@login_required
+def move_post(request, date, operation):
+    posts = Calendar.objects.all()
+
+    for i in range(len(posts)):
+        i += 1
+        if operation == 'next':
+            calculated_date = add_date(date, i)
+        elif operation == 'prev':
+            calculated_date = subtract_date(date, i)
+
+        post = posts.filter(date=calculated_date)
+        if post.exists():
+            post = get_object_or_404(Calendar, date=calculated_date)
+            return redirect('album:post_detail', pk=post.pk)
+        else:
+            post = get_object_or_404(Calendar, date=date)
+    return redirect('album:post_detail', pk=post.pk)

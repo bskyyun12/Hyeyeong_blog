@@ -63,7 +63,7 @@
                 {% endif %}
                 {% if notify.post_comment or notify.image_comment %}
                     <br>
-                    "{{notify.post_comment.comment|truncatechars:15}}{{notify.image_comment.comment|truncatechars:21}}"<br>
+                    "{{notify.post_comment.comment|truncatechars:21}}{{notify.image_comment.comment|truncatechars:21}}"<br>
                 {% endif %}
             </div>
             </a>

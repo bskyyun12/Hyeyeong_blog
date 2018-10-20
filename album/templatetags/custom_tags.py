@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from album.models import Calendar
 from django import template
 import datetime
 
@@ -8,20 +10,36 @@ def modulo(num, val):
     return num % val
 
 @register.filter
-def add_date(date, val):
+def combine_day(date, val):
     if val < 10:
         val = '0'+str(val)
     return str(date)+'-'+str(val)
 
 @register.filter
+def add_date(date, val):
+    print('-------add_date---------')
+    try:
+        date_str = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
+        date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+    except:
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+    result = date + datetime.timedelta(days=val)
+    return result
+
+@register.filter
 def subtract_date(date, val):
-    date_str = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
-    date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+    print('-------subtract_date---------')
+    try:
+        date_str = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
+        date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+    except:
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
     result = date - datetime.timedelta(days=val)
     return result
 
 @register.filter
 def subtract_month(date, val):
+    print('-------subtract_month---------')
     date_str = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
     date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     result = date - datetime.timedelta(val*365.24/12)
@@ -29,6 +47,7 @@ def subtract_month(date, val):
 
 @register.filter
 def subtract_year(date, val):
+    print('-------subtract_year---------')
     date_str = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
     date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     result = date - datetime.timedelta(val*365.24)
@@ -36,13 +55,14 @@ def subtract_year(date, val):
 
 @register.filter(name='zip')
 def zip_lists(a, b):
-  return zip(a, b)
+    print('-------zip---------')
+    return zip(a, b)
 
 @register.filter(name='has_post')
-def has_post(day_str, posts):
-    day=''
+def has_post(date_str, posts):
+    date=''
     try:
-        day = datetime.datetime.strptime(day_str, "%Y-%m-%d").date()
+        date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     except:
         pass
 
@@ -50,7 +70,7 @@ def has_post(day_str, posts):
         has_post = False
         post_date_str = str(post.date.year)+'-'+str(post.date.month)+'-'+str(post.date.day)
         post_date = datetime.datetime.strptime(post_date_str, "%Y-%m-%d").date()
-        if day == post_date:
+        if date == post_date:
             has_post = True
             break
         else:
@@ -60,3 +80,23 @@ def has_post(day_str, posts):
         return True
     else:
         return False
+
+@register.filter(name='get_post_field')
+def get_post_field(date, field):
+    try:
+        post = get_object_or_404(Calendar, date=date)
+        post_pk = post.pk
+        post_title = post.title
+        image = ''
+        for thumb in post.images.all():
+            image = thumb.thumbnail.url
+            break
+    except:
+        post_pk = None
+
+    if field == 'pk':
+        return post_pk
+    elif field == 'title':
+        return post_title
+    elif field == 'image':
+        return image

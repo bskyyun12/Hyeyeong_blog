@@ -106,4 +106,9 @@ class Notification(models.Model):
     like = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.sender} --> {self.receiver}'
+        try:
+            output = f'parent={self.image_comment.parent.id}. {self.sender.first_name} -> {self.receiver.first_name} : {self.image_comment.comment}'
+        except:
+            output = f'{self.sender.first_name} -> {self.receiver.first_name}'
+
+        return output

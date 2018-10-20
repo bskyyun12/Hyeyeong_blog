@@ -41,6 +41,19 @@ class UserManager(BaseUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
+    # make first_name as case insenditive
+    def filter(self, **kwargs):
+        if 'first_name' in kwargs:
+            kwargs['first_name__iexact'] = kwargs['first_name']
+            del kwargs['first_name']
+        return super(UserManager, self).filter(**kwargs)
+
+    def get(self, **kwargs):
+        if 'first_name' in kwargs:
+            kwargs['first_name__iexact'] = kwargs['first_name']
+            del kwargs['first_name']
+        return super(UserManager, self).get(**kwargs)
+
 
 # Extending the base class that Django has for User models.
 class User(AbstractUser):
@@ -48,8 +61,9 @@ class User(AbstractUser):
 
     # Removing the username field.
     username = None
-    # Making the email field required and unique.
+    # Making the email, first_name field required and unique.
     email = models.EmailField(_('email address'), unique=True)
+    first_name = models.CharField(_('first name'), unique=True, max_length=20)
 
     # Telling Django that you are going to use the email field as the USERNAME_FIELD.
     USERNAME_FIELD = 'email'

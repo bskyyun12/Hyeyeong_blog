@@ -2,111 +2,103 @@
 {% load custom_tags %}
 
 {% block content %}
-    <div class="row bg-light">
-        <div class="col-md-8 border-right">
+    <div class="row bg-light m-0">
+        <div class="col-md-8 pt-3 border-right">
+            <div class="">
+                <h2 class="m-0 p-1">Calendar Album
+                    <a class="btn btn-primary float-right mt-1" href="{% url 'album:post_new' date=today|date:'Y-m-d' %}">
+                        <i class="fa fa-calendar-plus-o"></i>
+                    </a>
+                </h2>
+
+            </div>
+            <hr>
             <!-- calendar -->
             <div class="calendar p-2">
                 <!-- calendar_header -->
-                <div class="p-3">
+                <div class="pb-3">
                     <form class="row justify-content-around m-0" action="" method="get">
-                        <button type="submit" class="btn btn-primary" name="year_month"  value="{{pre_year_month|date:'Y-m'}}"><i class="fa fa-chevron-left" style="font-size:22px"></i></button>
-                        <h3 class="m-1">{{month_alphabet}}, {{year_month.year}}</h3>
-                        <button type="submit" class="btn btn-primary" name="year_month"  value="{{next_year_month|date:'Y-m'}}"><i class="fa fa-chevron-right" style="font-size:22px"></i></button>
+                        <button type="submit" class="btn btn-primary btn-sm" name="year_month"  value="{{pre_year_month|date:'Y-m'}}"><i class="fa fa-chevron-left" style="font-size:19px"></i></button>
+                        <h3 class="m-1 calendar_view_year_month">{{month_alphabet}}, {{year_month.year}}</h3>
+                        <button type="submit" class="btn btn-primary btn-sm" name="year_month"  value="{{next_year_month|date:'Y-m'}}"><i class="fa fa-chevron-right" style="font-size:19px"></i></button>
                     </form>
                 </div>
 
                 <!-- calendar_weekdays -->
-                <div class="row mr-0 ml-0 text-center text-danger" class="">
-                    <div class="col p-0 ml-1 border bg-gray rounded">Sun</div>
+                <div class="row mr-0 ml-0 pb-2 border-bottom text-center text-primary font-weight-bold" class="">
+                    <div class="col p-0 ml-1 border bg-gray rounded text-danger">Sun</div>
                     <div class="col p-0 ml-1 border bg-gray rounded">Mon</div>
                     <div class="col p-0 ml-1 border bg-gray rounded">Tue</div>
                     <div class="col p-0 ml-1 border bg-gray rounded">Wed</div>
                     <div class="col p-0 ml-1 border bg-gray rounded">Thu</div>
-                    <div class="col p-0 ml-1 text-center text-danger border bg-gray rounded">Fri</div>
-                    <div class="col p-0 ml-1 text-center text-danger border bg-gray rounded">Sat</div>
+                    <div class="col p-0 ml-1 border bg-gray rounded">Fri</div>
+                    <div class="col p-0 ml-1 border bg-gray rounded text-danger">Sat</div>
                 </div>
                 <!-- calendar_content -->
                 {% for week in weeks %}
-                <div class="row mr-0 ml-0 mt-1">
+                <div class="row mr-0 ml-0 pt-2">
                     {% for day in week %}
-                        {% if year_month|date:"Y-m"|add_date:day|has_post:posts %}
-                            <div class="calendar_date col p-0 ml-1 text-right border bg-gray rounded">
-                                {% for post in posts %}
-                                    <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
-                                        {% if post.date|date:"Y-m-d" == year_month|date:"Y-m"|add_date:day %}
-                                            {% for thumb in post.images.all %}
-                                                {% if forloop.counter == 1 %}
-                                                    <img class="rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
+                        {% with date=year_month|date:"Y-m"|combine_day:day %}
+                            <!-- if post exists on a day -->
+                            <div class="calendar_date col p-0 ml-1 text-right border bg-gray rounded {% if date == today|date:'Y-m-d' %} border-primary {% endif %}">
+                                {% if date|has_post:posts %}
+                                    <a href="{% url 'album:post_detail' pk=date|get_post_field:'pk' %}" class="calendar_date" >
+                                        <img class="rounded img-fluid" src="{{ date|get_post_field:'image' }}" alt="Calendar image">
                                         <div class="text-white" style="position: absolute; top: 0; right: 3;">{{day}}</div>
                                     </a>
-                                {% endfor %}
+                                {% else %}
+                                    <a {% if day != 0 %}href="{% url 'album:post_new' date=date %}"{% endif %} class="">
+                                        <div class="calendar_date text-secondary">{{day}}</div>
+                                    </a>
+                                {% endif %}
                             </div>
-                        {% else %}
-                        <a href="{% url 'album:post_new' date=year_month|date:'Y-m'|add_date:day %}" class="col p-0 ml-1 text-right border bg-gray rounded">
-                            <div class="calendar_date text-secondary">{{day}}</div>
-                        </a>
-                        {% endif %}
-
+                        {% endwith %}
                     {% endfor %}
                 </div>
                 {% endfor %}
                 <hr>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 p-3">
             <div class="container card">
-                {% for post in posts %}
-                    {% if post.date|date:"Y-m-d" == today|subtract_date:7|date:"Y-m-d" %}
-                    <div class="card-body">
-                        <h4 class="card-title text-center">Post a week ago!</h4>
-                        <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
+                <div class="card-body">
+                    <h4 class="card-title text-center">Post a week ago!</h4>
+                    {% with date=today|subtract_date:7|date:"Y-m-d" %}
+                    <h6 class="text-center">Date: {{date}}</h6>
+                        <a href="{% url 'album:post_detail' pk=date|get_post_field:'pk' %}" class="calendar_date" >
                             <div class="post_week_ago">
-                                <h6 class="text-center">Title: {{post.title}}</h6>
-                                {% for thumb in post.images.all %}
-                                    {% if forloop.counter == 1 %}
-                                        <img class="img-thumbnail rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
-                                    {% endif %}
-                                {% endfor %}
+                                <h6 class="text-center">Title: {{date|get_post_field:'title'}}</h6>
+                                <img class="img-thumbnail rounded img-fluid" src="{{ date|get_post_field:'image' }}" alt="Calendar image">
                             </div>
                         </a>
-                    </div>
-                    {% endif %}
+                    {% endwith %}
+                </div>
 
-                    {% if post.date|date:"Y-m-d" == today|subtract_month:1|date:"Y-m-d" %}
-                    <div class="card-body">
-                        <h4 class="text-center">Post a month ago!</h4>
-                        <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
+                <div class="card-body">
+                    <h4 class="text-center">Post a month ago!</h4>
+                    {% with date=today|subtract_month:1|date:"Y-m-d" %}
+                        <h6 class="text-center">Date: {{date}}</h6>
+                        <a href="{% url 'album:post_detail' pk=date|get_post_field:'pk' %}" class="calendar_date" >
                             <div class="post_month_ago">
-                                <h6 class="card-title text-center">Title: {{post.title}}</h6>
-                                {% for thumb in post.images.all %}
-                                    {% if forloop.counter == 1 %}
-                                        <img class="img-thumbnail rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
-                                    {% endif %}
-                                {% endfor %}
+                                <h6 class="card-title text-center">Title: {{date|get_post_field:'title'}}</h6>
+                                <img class="img-thumbnail rounded img-fluid" src="{{ date|get_post_field:'image' }}" alt="Calendar image">
                             </div>
                         </a>
-                    </div>
-                    {% endif %}
+                    {% endwith %}
+                </div>
 
-                    {% if post.date|date:"Y-m-d" == today|subtract_year:1|date:"Y-m-d" %}
-                    <div class="card-body">
-                        <h4 class="text-center">Post a year ago!</h4>
-                        <a href="{% url 'album:post_detail' pk=post.pk %}" class="calendar_date" >
-                            <div class="post_month_ago">
-                                <h6 class="card-title text-center">Title: {{post.title}}</h6>
-                                {% for thumb in post.images.all %}
-                                    {% if forloop.counter == 1 %}
-                                        <img class="img-thumbnail rounded img-fluid" src="{{ thumb.thumbnail.url }}" alt="Calendar image">
-                                    {% endif %}
-                                {% endfor %}
+                <div class="card-body">
+                    <h4 class="text-center">Post a year ago!</h4>
+                    {% with date=today|subtract_year:1|date:"Y-m-d" %}
+                        <h6 class="text-center">Date: {{date}}</h6>
+                        <a href="{% url 'album:post_detail' pk=date|get_post_field:'pk' %}" class="calendar_date" >
+                            <div class="post_year_ago">
+                                <h6 class="card-title text-center">Title: {{date|get_post_field:'title'}}</h6>
+                                <img class="img-thumbnail rounded img-fluid" src="{{ date|get_post_field:'image' }}" alt="Calendar image">
                             </div>
                         </a>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+                    {% endwith %}
+                </div>
             </div>
         </div>
     </div>
@@ -136,7 +128,7 @@
 
      for (var i = 0; i < $(".calendar_date").length; i++) {
          if (($(".calendar_date")[i]).innerHTML == 0) {
-             ($(".calendar_date")[i]).innerHTML = '-'
+             ($(".calendar_date")[i]).innerHTML = ' '
          }
      }
 

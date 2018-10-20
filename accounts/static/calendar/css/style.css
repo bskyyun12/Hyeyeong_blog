@@ -77,8 +77,21 @@
 }
 
 @media screen and (max-width: 530px) {
-.calendar_year_month {
+.home_year_month {
     font-size: 14px;
   }
 }
+
+@media screen and (max-width: 530px) {
+.calendar_view_year_month {
+    font-size: 22px;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+.calendar_view_year_month {
+    font-size: 2.1rem;
+  }
+}
+
 /* Calendar css */

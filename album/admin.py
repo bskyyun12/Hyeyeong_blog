@@ -6,4 +6,7 @@ admin.site.register(Image)
 admin.site.register(Comment)
 admin.site.register(ImageComment)
 admin.site.register(Friend)
-admin.site.register(Notification)
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'receiver', 'post', 'post_comment', 'image', 'image_comment', 'like', 'date')
+admin.site.register(Notification, NotificationAdmin)

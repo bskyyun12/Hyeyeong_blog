@@ -6,9 +6,6 @@
         <h5><a class="text-info" href="{% url 'accounts:view_profile' %}">Welcome! {{user.first_name}}</a></h5>
     </div>
     <div class="col-sm-6">
-        <button onclick="window.location='{% url 'album:calendar_view' %}'" type="button" class="btn btn-primary" >
-            <i class="fa fa-calendar"></i>
-        </button>
         <button class="btn btn-primary float-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
             Search
         </button>
@@ -46,6 +43,15 @@
 
 <hr>
 
+<!-- msg from views/post_new when you try to post on the date that has a post already -->
+{% if msg %}
+    <p id="msg">{{msg}}</p>
+    <a class="btn btn-primary btn-sm" href="{% url 'album:post_detail' pk=post.pk %}">Open Post</a>
+    {% if post.author == user %}
+        <a class="btn btn-secondary btn-sm" href="{% url 'album:post_edit' pk=post.pk %}">Edit Post</a>
+    {% endif %}
+{% endif %}
+
 <h2 class="my-4 text-center">
     <form class="my-2 mr-2" action="" method="get">
         {% if emoticon or search_content %}
@@ -76,7 +82,7 @@
     <div class="row text-center">
         {% for post in posts %}
         <div class="card text-center mb-3 col-6 col-lg-4">
-            <h3 class="card-header calendar_year_month">{{ post.date|date:"Y.m.d" }}</h3>
+            <h3 class="card-header home_year_month">{{ post.date|date:"Y.m.d" }}</h3>
 
             <div class="pt-1 pr-1">
                 <span class="like_button float-right">
@@ -183,6 +189,11 @@
             }
         });
     })
+    // alert if msg exists from views/post_new
+    var msg = document.getElementById('msg');
+    if (msg) {
+        alert('Post exists on selected date.')
+    }
 </script>
 
 {% endblock %}

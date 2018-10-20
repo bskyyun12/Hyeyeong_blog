@@ -32,17 +32,20 @@
         </a>
 
         <ol class="carousel-indicators">
-            {% for img in image.post.images.all %}
-            <li class="{% if img.pk is image.pk %}active{% endif %}"></li>
-            {% endfor %}
+            {% if image.post.images.all|length > 1 %}
+                {% for img in image.post.images.all %}
+                    <li class="{% if img.pk is image.pk %}active{% endif %}"></li>
+                {% endfor %}
+            {% endif %}
         </ol>
-
-        <a class="carousel-control-prev" href="{% url 'album:image_detail' post_pk=image.post.pk pk=previous_image.pk %}">
-            <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="{% url 'album:image_detail' post_pk=image.post.pk pk=next_image.pk %}">
-            <span class="carousel-control-next-icon"></span>
-        </a>
+        {% if image.post.images.all|length > 1 %}
+            <a class="carousel-control-prev" href="{% url 'album:image_detail' post_pk=image.post.pk pk=previous_image.pk %}">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="{% url 'album:image_detail' post_pk=image.post.pk pk=next_image.pk %}">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        {% endif %}
 
     </div>
 </div>
@@ -113,8 +116,8 @@
     {% for user in users %}
     {% if user == comment.author %}
     <a href="{{ user.userprofile.image.url }}">
-                        <img class="rounded-circle mr-3" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
-                    </a>
+        <img class="rounded-circle mr-3" src="{{ user.userprofile.image_thumbnail.url }}" width="62" height="62"/>
+    </a>
     <div class="media-body">
         <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
                             {% if user.first_name %}
@@ -177,7 +180,9 @@
 </div>
 
     <hr>
-    <br><br>
+    {% if forloop.last %}
+    <br><br><br>
+    {% endif %}
     {% empty %}
     <p>No comments here yet :(</p>
     {% endfor %}

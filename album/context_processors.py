@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import timedelta
 from django.utils import timezone
 
+
 # inflect package: Correctly generate plurals, singular nouns, ordinals, indefinite articles; convert numbers to words. -> pip install inflect
 # but i just need basic plural
 def pluralize(num, word):
@@ -18,6 +19,7 @@ def notification(request):
     if request.user.is_authenticated:
 
         notifications = Notification.objects.filter(receiver=request.user).order_by('read', '-date')
+
         page = request.GET.get('page', 1)
         paginator = Paginator(notifications, 5)
         try:
@@ -62,7 +64,7 @@ def notification(request):
 
         notification_lists = zip(notifications, date_notify)
 
-        unread_count = Notification.objects.filter(read=False).count()
+        unread_count = Notification.objects.filter(receiver=request.user, read=False).count()
 
     return {
         'notifications': notifications,
