@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extrahead %}
+    <!-- need to add to use bootstrap_datepicker_plus -->
+    {{ form.media }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Edit Baby Profile</h1>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.error }}
+        Current Profile Picture:<br>
+        <a href="{{ form.image.value.url }}">
+            <img class="img-thumbnail" src="{{ form.image.value.url }}" width="240"/> <br>
+        </a>
+
+        <label>Picture</label>
+        <div class="custom-file">
+            <input id="fileupload" type="file" name="image" onchange="javascript:updateList()" class="custom-file-input" accept="image/*">
+            <label class="custom-file-label" for="inputGroupFile02">Change Profile Picture</label>
+        </div>
+        <div id="fileList"></div>
+
+        <label>{{ form.first_name.label }}{{ form.first_name.error }}</label>
+        <input value="{{ form.first_name.value }}" name="first_name" class="form-control" required maxlength="30">
+
+        <label>{{ form.last_name.label }}{{ form.last_name.error }}</label>
+        <input value="{{ form.last_name.value }}" name="last_name" class="form-control" required maxlength="20">
+
+        <label>{{ form.birthday.label }}{{ form.birthday.error }}</label>
+            {{ form.birthday }}
+
+        <label>{{ form.born_weight.label }}(g){{ form.born_weight.error }}</label>
+        <input type="number" min="1500" max="4500" placeholder="{{ form.born_weight.label }}" value="{{ form.born_weight.value }}" name="born_weight" class="form-control">
+
+        <label>{{ form.born_height.label }}(cm){{ form.born_height.error }}</label>
+        <input type="number" min="35" max="75" placeholder="{{ form.born_height.label }}" value="{{ form.born_height.value }}" name="born_height" class="form-control">
+
+        <label>{{ form.born_location.label }}{{ form.born_location.error }}</label>
+        <input placeholder="{{ form.born_location.label }}" value="{{ form.born_location.value }}" name="born_location" class="form-control">
+
+        <hr>
+
+        <button type="reset" name="button" class="btn btn-danger">Reset</button>
+        <button type="submit" name="button" class="btn btn-primary float-right">Submit</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- Displays selected files -->
+<script type="text/javascript">
+    updateList = function() {
+        var input = document.getElementById('fileupload');
+        var output = document.getElementById('fileList');
+
+        htmlStr = 'Selected file:<ul>';
+        for (var i = 0; i < input.files.length; ++i) {
+            htmlStr += '<li>' + input.files.item(i).name + '</li>';
+        }
+        htmlStr += '</ul>';
+        output.innerHTML = htmlStr
+    }
+</script>
+<!-- datepicker -->
+<script type="text/javascript">
+    $(function() {
+        $('#id_birthday_0').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+        });
+    });
+</script>
+{% endblock %}

@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import ugettext_lazy as _
-from .models import User
-from .models import UserProfile
+from .models import User, UserProfile, BabyProfile
 
 # Registering your new class to be used by Django admin for your new User model.
 @admin.register(User)
@@ -44,3 +43,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     user_info.short_description = 'info'
 
 admin.site.register(UserProfile, UserProfileAdmin)
+
+class BabyProfileAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'birthday')
+admin.site.register(BabyProfile, BabyProfileAdmin)

@@ -106,3 +106,25 @@ def create_profile(sender, **kwargs):
         user_profile = UserProfile.objects.create(user=kwargs['instance'])
 
 post_save.connect(create_profile, sender=settings.AUTH_USER_MODEL)
+
+class BabyProfile(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=20)
+    born_weight = models.IntegerField(default=0)
+    born_height = models.IntegerField(default=0)
+    born_location = models.CharField(max_length=20, blank=True)
+    birthday = models.DateTimeField()
+    image = models.ImageField(upload_to='baby_profile_image', blank=True, default='profile_image/flower.png')
+    image_thumbnail = ImageSpecField(
+		source = 'image',
+		processors = [Resize(700, 700)], # 처리할 작업 목룍
+		format = 'JPEG',					# 최종 저장 포맷
+		options = {'quality': 60})  		# 저장 옵션
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
+class Milestone(models.Model):
+    milestone = models.CharField(max_length=30)
+    date = models.DateField(null=True, blank=True)
+    description = models.CharField(max_length=50)

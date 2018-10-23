@@ -470,6 +470,10 @@ mark, .mark {
     height: auto
 }
 
+.img-circle {
+    border-radius:50%
+}
+
 .figure {
     display: inline-block
 }

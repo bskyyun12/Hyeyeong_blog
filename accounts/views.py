@@ -3,17 +3,60 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from accounts.models import User
-from .models import UserProfile
+from .models import UserProfile, BabyProfile
 from django.urls import reverse
 from django.contrib.auth.forms import PasswordChangeForm
-from album.models import Friend
+from album.models import Calendar, Friend
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 from .forms import (
     # EntryForm,
     RegistrationForm,
     EditProfileForm,
-    UserProfileImageForm
+    UserProfileImageForm,
+    BabyForm
 )
+
+def baby_profile(request):
+    baby = BabyProfile.objects.get(first_name='Angelica Teresa Hyeyeong')
+    today = datetime.now().date()
+
+    posts = []
+    newyear_post = Calendar.objects.filter(date__month='1', date__day='1').order_by('date').last()
+    posts.append(newyear_post)
+
+    christmas_post = Calendar.objects.filter(date__month='12', date__day='25').order_by('date').last()
+    posts.append(christmas_post)
+
+    args = {
+        'baby': baby,
+        'posts': posts,
+        'today': today,
+    }
+    return render(request, 'accounts/baby_profile.html', args)
+
+@login_required
+def edit_baby_profile(request):
+    baby = get_object_or_404(BabyProfile, first_name='Angelica Teresa Hyeyeong')
+    if request.user.is_superuser:
+        if request.method == "POST":
+            form = BabyForm(request.POST, instance=baby)
+            if form.is_valid():
+                baby = form.save(commit=False)
+                if 'image' in request.FILES:
+                    baby.image.delete()
+                    baby.image = request.FILES['image']
+                baby.save()
+                return redirect('accounts:baby_profile')
+        else:
+            form = BabyForm(instance=baby)
+        args = {
+            'form': form,
+        }
+        return render(request, 'accounts/edit_baby_profile.html', args)
+    else:
+        return redirect('album:home')
+
 
 def welcome(request):
     if request.method =='POST':

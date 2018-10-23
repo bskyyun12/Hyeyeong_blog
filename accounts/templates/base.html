@@ -5,12 +5,19 @@
         <title>Hyeyeong's blog</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <!-- bootstrap Minty theme -->
         <link rel="stylesheet" href="{% static 'calendar/css/bootstrap.css' %}" />
         <!-- style.css -->
         <link rel="stylesheet" href="{% static 'calendar/css/style.css' %}" />
         <link rel="stylesheet" href="{% static 'calendar/css/bootstrap-datepicker.css' %}" />
+
+        <!-- need to add to use bootstrap_datepicker_plus.. -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+
+        {% block extrahead %}
+        {% endblock %}
     </head>
     <body>
         <div class="view intro-base">
@@ -37,16 +44,19 @@
                             </ul>
                         </div>
                         <div class="">
-                            <button onclick="window.location='{% url 'album:calendar_view' %}'" type="button" class="btn btn-secondary">
-                                <i class="fa fa-calendar"></i>
+                        {% if user.is_authenticated %}
+                            <button onclick="window.location='{% url 'accounts:baby_profile' %}'" type="button" class="btn btn-secondary" data-toggle="popover" data-content="Hyeyeong's Profile" data-placement="bottom" data-container="body">
+                                <i class="far fa-heart" style="font-size:20px;"></i>
+                            </button>
+                            <button onclick="window.location='{% url 'album:calendar_view' %}'" type="button" class="btn btn-secondary" data-toggle="popover" data-content="Calendar Album" data-placement="bottom" data-container="body">
+                                <i class="far fa-calendar-alt" style="font-size:20px;"></i>
                             </button>
                             {% include 'album/notification.html' %}
-                            {% if user.is_authenticated %}
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
-                        </div>
                         {% endif %}
+                        </div>
                     </nav>
                 </div>
 
@@ -68,7 +78,6 @@
 
         <!-- JQuery (Bootstrap보다 위에 넣어야함!!) -->
         <script type="text/javascript" src="{% static 'calendar/js/jquery-3.3.1.min.js' %}"></script>
-
         <!-- Tooltips -->
         <script type="text/javascript" src="{% static 'calendar/js/popper.min.js' %}"></script>
         <!-- Bootstrap core JavaScript -->
@@ -76,9 +85,12 @@
         <!-- MDB core JavaScript - Welcome page -->
         <script type="text/javascript" src="{% static 'calendar/js/mdb.min.js' %}"></script>
 
+        <script type="text/javascript" src="{% static 'calendar/js/bootstrap-datepicker.js' %}"></script>
+
+
         <!-- Plugins -->
         <!-- Datepicker.js -->
-        <script type="text/javascript" src="{% static 'calendar/js/bootstrap-datepicker.js' %}"></script>
+
 
         {% block script %}
         {% endblock %}

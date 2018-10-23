@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block extrahead %}
+
+
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    {% if request.user.is_superuser %}
+    <button onclick="window.location='{% url 'accounts:edit_baby_profile' %}'" class="btn btn-primary">Edit</button>
+    <hr>
+    {% endif %}
+
+    <div class="bg-transparent">
+        <div class="text-center">
+            <h2 class="font-weight-bold text-secondary">{{baby.first_name}}</h2>
+            <h2 class="font-weight-bold text-secondary">{{baby.last_name}}</h2>
+            <a href="{{ baby.image.url }}">
+                <img class="img-circle" src="{{ baby.image_thumbnail.url }}" width="240"/>
+            </a>
+        </div>
+        <div class="row text-center pt-3">
+            <div class="col-3">
+                <i class="fas fa-weight text-primary" style="font-size:35px;"></i>
+                <br>
+                {{baby.born_weight}}g
+            </div>
+            <div class="col-3">
+                <i class="fas fa-ruler-combined text-primary" style="font-size:35px;"></i>
+                <br>
+                {{baby.born_height}}cm
+            </div>
+            <div class="col-3">
+                <i class="fas fa-birthday-cake text-primary" style="font-size:35px;"></i>
+                <br>
+                {{baby.birthday|date:"Y-m-d P"}}
+            </div>
+            <div class="col-3">
+                <i class="fas fa-thumbtack text-primary" style="font-size:35px;"></i>
+                <br>
+                {{baby.born_location}}
+            </div>
+        </div>
+        <hr>
+
+        <div class="card">
+            <ul class="nav nav-pills text-center" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="development-tab" data-toggle="pill" href="#development" role="tab" aria-controls="development" aria-selected="true">
+                        Development
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="Milestones-tab" data-toggle="pill" href="#Milestones" role="tab" aria-controls="Milestones" aria-selected="false">
+                        Milestones
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="growth-tab" data-toggle="pill" href="#growth" role="tab" aria-controls="growth" aria-selected="false">
+                        growth
+                    </a>
+                </li>
+            </ul>
+            <hr class="mt-0">
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="development" role="tabpanel" aria-labelledby="development-tab">
+                    <h3 class="text-center">Second Month</h3>
+                    <hr>
+                    <div class="bd-example bd-example-tabs">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                                        Motor Skills
+                                    </a>
+                                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                                        Profile
+                                    </a>
+                                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+                                        Messages
+                                    </a>
+                                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                                        Settings
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <div class="tab-content" id="v-pills-tabContent">
+                                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                                        Two-month-old babies are gaining more control over their bodies. That means they can hold their head a little steadier while lying on their tummies or being supported upright.<br>
+                                        In the second month of life, babies continue to have a strong sucking reflex. You may notice your baby likes to suck on a fist or a few fingers. This is one of the best ways babies have of comforting themselves.<br>
+                                        At 2 months, your baby doesn’t yet have the coordination to play with toys. But she may bat at a colorful object hanging in front of her. Your baby may even briefly hold a toy that you place in one of her hands.
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                                        1-2
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                                        1-3
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                                        1-4
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="Milestones" role="tabpanel" aria-labelledby="Milestones-tab">
+                    <div class="row">
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <i class="fas fa-plus text-primary" style="font-size:21px;"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 col-md-4 col-lg-3">
+                            123
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            123
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            123
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="growth" role="tabpanel" aria-labelledby="growth-tab">
+                    3333333
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+    <hr>
+
+    <div class="container-fluid bg-3 text-center">
+        <h3>Memories!</h3><br>
+        <div class="row text-center">
+            {% for post in posts %}
+            {% if post.pk %}
+            <div id="memory_Carousel" class="carousel slide  text-center mb-3 col-6 col-md-4 col-lg-3" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    {% if post.images.all|length > 1 %}
+                    {% for image in post.images.all %}
+                    <li data-target="#carouselExampleIndicators" data-slide-to="{{forloop.counter0}}" class="{% if forloop.counter0 == 0 %}active{% endif %}"></li>
+                    {% endfor %}
+                    {% endif %}
+                </ol>
+                <div class="carousel-inner">
+                    {% for image in post.images.all %}
+                    <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
+                        <h6 class="text-primary">< {{ post.date|date:"Y.m.d" }} ></h6>
+                        <a class="portfolio-box" href="{% url 'album:image_detail' post_pk=post.pk pk=image.pk  %}">
+                                    <img class="img-thumbnail w3-round-xlarge img-responsive" style="width: 100%; display: block;" src="{{ image.thumbnail.url }}" alt="Card image">
+                                </a>
+                    </div>
+                    {% if post.images.all|length != 1 %}
+                    <a class="carousel-control-prev" href="#memory_Carousel" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                    <a class="carousel-control-next" href="#memory_Carousel" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {% endblock %}

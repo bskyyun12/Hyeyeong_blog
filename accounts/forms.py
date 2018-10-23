@@ -1,8 +1,9 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import UserProfile
+from .models import UserProfile, BabyProfile
 from accounts.models import User
+from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
 
 # class EntryForm(forms.Form):
 #     name = forms.CharField(max_length=100)
@@ -33,7 +34,6 @@ class RegistrationForm(UserCreationForm):
 
 
 class EditProfileForm(UserChangeForm):
-
     class Meta:
         model = User
         fields = (
@@ -53,3 +53,21 @@ class UserProfileImageForm(forms.ModelForm):
             'phone',
             'image',
         )
+
+class BabyForm(forms.ModelForm):
+    birthday = forms.SplitDateTimeField()
+    class Meta:
+        model = BabyProfile
+        fields = (
+            'image',
+            'first_name',
+            'last_name',
+            'birthday',
+            'born_weight',
+            'born_height',
+            'born_location',
+        )
+    def __init__(self, *args, **kwargs):
+        super(BabyForm, self).__init__(*args, **kwargs)
+        self.fields['birthday'].widget.widgets[0]=DatePickerInput(format='%Y-%m-%d')
+        self.fields['birthday'].widget.widgets[1]=TimePickerInput(format='%H:%M')

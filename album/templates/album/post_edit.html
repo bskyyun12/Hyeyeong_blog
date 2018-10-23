@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block extrahead %}
+    <!-- need to add to use bootstrap_datepicker_plus -->
+    {{ form.media }}
+{% endblock %}
+
 {% block content %}
 <h1>Edit post</h1>
 
@@ -31,7 +36,7 @@
     <input placeholder="{{ form.description.label }}" value="{{ form.description.value }}" name="description" class="form-control" required maxlength="300">
 
     <label>{{ form.date.label }}{{ form.date.errors }}</label>
-    <input type="text" id="datepicker" placeholder="{{ form.date.label }}" value="{{ form.date.value|date:"Y-m-d" }}" name="date" required class="form-control">
+    {{form.date}}
 
     <!-- emoticons -->
     <label>{{ form.emoticon.label }}{{ form.emoticon.errors }}</label>

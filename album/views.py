@@ -22,7 +22,6 @@ from .templatetags.custom_tags import add_date, subtract_date, subtract_month, s
 
 @login_required
 def calendar_view(request):
-    posts = Calendar.objects.all()
     calendar.setfirstweekday(6)
 
     year_list = [
@@ -86,7 +85,6 @@ def calendar_view(request):
         'pre_year_month': pre_year_month,
         'next_year_month': next_year_month,
         'weeks': weeks,
-        'posts': posts,
         'today': today,
     }
     return render(request, 'album/calendar_view.html', args)

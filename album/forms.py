@@ -1,5 +1,6 @@
 from django import forms
 from .models import Calendar, Comment, Image, ImageComment
+from bootstrap_datepicker_plus import DatePickerInput
 
 class CalendarForm(forms.ModelForm):
 
@@ -11,6 +12,9 @@ class CalendarForm(forms.ModelForm):
             'date',
             'emoticon'
         )
+        widgets = {
+            'date': DatePickerInput(format='%Y-%m-%d')
+        }
 
 
 class CommentForm(forms.ModelForm):

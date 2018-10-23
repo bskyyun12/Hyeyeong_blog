@@ -10,6 +10,10 @@ def modulo(num, val):
     return num % val
 
 @register.filter
+def add_string(a, b):
+    return str(a) + str(b)
+
+@register.filter
 def combine_day(date, val):
     if val < 10:
         val = '0'+str(val)
@@ -59,14 +63,15 @@ def zip_lists(a, b):
     return zip(a, b)
 
 @register.filter(name='has_post')
-def has_post(date_str, posts):
+def has_post(date_str):
     date=''
     has_post = False
     try:
         date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     except:
         pass
-
+        
+    posts = Calendar.objects.all()
     for post in posts:
         has_post = False
         post_date_str = str(post.date.year)+'-'+str(post.date.month)+'-'+str(post.date.day)
@@ -92,12 +97,14 @@ def get_post_field(date, field):
         for thumb in post.images.all():
             image = thumb.thumbnail.url
             break
+
+        if field == 'pk':
+            return post_pk
+        elif field == 'title':
+            return post_title
+        elif field == 'image':
+            return image
+
     except:
         post_pk = None
-
-    if field == 'pk':
-        return post_pk
-    elif field == 'title':
-        return post_title
-    elif field == 'image':
-        return image
+        return None

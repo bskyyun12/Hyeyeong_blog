@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
+<div class="row mb-0 mt-4">
     <div class="col-sm-6">
-        <h5><a class="text-info" href="{% url 'accounts:view_profile' %}">Welcome! {{user.first_name}}</a></h5>
+        <h5 class="font-weight-bold">
+            Welcome,
+            <a class="text-info" href="{% url 'accounts:view_profile' %}">
+            {{user.first_name}}!
+            </a>
+        </h5>
     </div>
     <div class="col-sm-6">
         <button class="btn btn-primary float-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
@@ -89,12 +94,12 @@
                 <a class="like" name="{{ post.id }}" value="Like">
                     {% if user in post.likes.all %}
                         <button class="btn btn-secondary" type="button" name="button">
-                            <i class="fa fa-heart" id="heart{{post.id}}" style="color: red;"></i>
+                            <i class="fas fa-heart" id="heart{{post.id}}" style="color: red;"></i>
                         </button>
                         </a>
                     {% else %}
                         <button class="btn btn-secondary" type="button" name="button">
-                            <i class="fa fa-heart-o" id="heart{{post.id}}" style="color: red;"></i>
+                            <i class="far fa-heart" id="heart{{post.id}}" style="color: red;"></i>
                         </button>
                         </a>
                     {% endif %}
@@ -175,10 +180,10 @@
             success: function(response) { // 성공했을 때 호출할 콜백을 지정한다.
                 id = $(this).attr('name')
                 if (response.user_like) {
-                    $('#heart' + pk).removeClass('fa fa-heart-o').addClass('fa fa-heart');
+                    $('#heart' + pk).removeClass('far fa-heart').addClass('fas fa-heart');
                 }
                 else {
-                    $('#heart' + pk).removeClass('fa fa-heart').addClass('fa fa-heart-o');
+                    $('#heart' + pk).removeClass('fas fa-heart').addClass('far fa-heart');
                 }
 
                 // alert(response.message);
