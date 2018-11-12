@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'album',
     'django_cleanup',
     'imagekit',
-    'multiselectfield',
+    'multiselectfield', # currently using this for emoticon..
     'bootstrap_datepicker_plus',
     'django.contrib.admin',
     'django.contrib.auth',

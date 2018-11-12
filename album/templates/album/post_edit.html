@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block extrahead %}
     <!-- need to add to use bootstrap_datepicker_plus -->
     {{ form.media }}
+    <link rel="stylesheet" href="{% static 'calendar/css/cropper.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -11,15 +13,7 @@
 <form method="post" enctype="multipart/form-data" autocomplete="off">
     {% csrf_token %}
 
-    Current image(s):
-    <ul>
-        {% for image in images %}
-        <li>
-            {{ image.image }}
-            <a class="text-danger" href="{% url 'album:image_remove' operation='post_edit' pk=image.pk %}">Delete</a>
-        </li>
-        {% endfor %}
-    </ul>
+
     <label>Pictures</label>
     <div class="custom-file">
         <input id="fileupload" type="file" name="image" multiple onchange="javascript:updateList()" class="custom-file-input" accept="image/*">
@@ -55,13 +49,191 @@
         {% endfor %}
     </div>
 
+    <div class="row p-5">
+        <div class="col-12 pl-0">
+            Current image(s):
+        </div>
+        {% for image in images %}
+        <div class="img-container col-md-8 col-lg-6 p-0">
+            <hr>
+            <img id="{{forloop.counter}}" class="img-thumbnail" src="{{ image.image.url }}">
+
+            <div class="crop_btn crop_btn{{forloop.counter}} pb-2" style="display:none">
+                <div class="btn-group pull-left pb-1" role="group">
+                    <button type="button" class="btn btn-primary js-zoom-in">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary js-zoom-out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary js-rotate-left">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary js-scaleX">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </button>
+                </div>
+                <br>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#crop_image{{image.id}}">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <!-- delete Modal -->
+                <div class="modal fade" id="crop_image{{image.id}}" tabindex="-1" role="dialog" aria-labelledby="crop_imageLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="crop_imageLabel">Crop Picture</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Did you finish editing the picture?
+                            </div>
+                            <div class="modal-footer">
+                                <button onclick="crop_upload({{image.pk}}, {{forloop.counter}})" type="button" class="btn btn-info" data-dismiss="modal">
+                                    Yes, Crop
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">No, Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <progress id="progress{{image.pk}}" value="0"></progress>
+                <span id="display{{image.pk}}"></span>
+            </div>
+
+
+            <button type="button" onclick="startCrop({{forloop.counter}})" class="cropButton cropButton{{forloop.counter}} btn btn-sm btn-primary" style="display:inline-block;">Crop</button>
+            <!-- 삭제버튼 -->
+            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_image{{image.id}}">Delete</button>
+            <!-- delete Modal -->
+            <div class="modal fade" id="delete_image{{image.id}}" tabindex="-1" role="dialog" aria-labelledby="delete_imageLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="delete_imageLabel">Delete Picture</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this picture?
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-primary btn-sm" href="{% url 'album:image_remove' operation='post_edit' pk=image.pk %}">Yes, Delete</a>
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">No, Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
     <hr>
     <button type="submit" name="button" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %}
 
 {% block script %}
-<!-- Displays selected files -->
+<!-- cropper js -->
+<script type="text/javascript" src="{% static 'calendar/js/cropper.js' %}"></script>
+
+<script type="text/javascript">
+    function startCrop(i) {
+        cropReset();
+        image = $('#'+i);
+        var element = document.querySelector('.crop_btn'+i);
+        element.style.display = 'block';
+        $('.cropButton'+i).attr('style', 'display:none;');
+        image.cropper({
+            dragMode: 'move',
+        });
+    };
+
+    function cropReset() {
+        $('.img-container img').cropper("destroy");
+        var elements = document.querySelectorAll('.crop_btn');
+        for (var index = 0; index < elements.length; index++) {
+          elements[index].style.display = 'none';
+        }
+        $('.cropButton').attr('style', 'display:inline-block;');
+    }
+
+    $(".js-zoom-in").click(function() {
+        image.cropper("zoom", 0.1);
+    });
+    $(".js-zoom-out").click(function() {
+        image.cropper("zoom", -0.1);
+    });
+    $(".js-rotate-left").click(function() {
+        image.cropper("rotate", -90);
+    });
+    $(".js-rotate-right").click(function() {
+        image.cropper("rotate", 90);
+    });
+    $(".js-scaleX").click(function() {
+        var data = image.cropper('getData');
+        image.cropper('scale', -data.scaleX, data.scaleY);
+    });
+
+    function crop_upload(pk, id) {
+        var progressBar = document.getElementById("progress"+pk);
+        var display = document.getElementById("display"+pk);
+        image = $('#'+id);
+        image.cropper('getCroppedCanvas').toBlob(function (blob) {
+            var formData = new FormData();
+            formData.append('croppedImage', blob);
+            formData.append('pk', pk);
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'album:crop_upload' %}",
+                headers:{
+                    "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val()
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function(){
+                    // get the native XmlHttpRequest object
+                    var xhr = $.ajaxSettings.xhr();
+                    // set the onprogress event handler
+                    xhr.upload.onprogress = function(e){
+                        if (e.lengthComputable) {
+                            progressBar.max = e.total;
+                            progressBar.value = e.loaded;
+                            display.innerText = Math.floor((e.loaded / e.total) * 100) + '%';
+                            console.log(display.innerText);
+                        }
+                    };
+                    xhr.upload.onloadstart = function(e) {
+                        progressBar.value = 0;
+                        display.innerText = '0%';
+                    };
+                    // set the onload event handler
+                    xhr.upload.onload = function(e){
+                        progressBar.value = e.loaded;
+                        display.innerText = '100%';
+                    };
+                    // return the customized object
+                    return xhr;
+                },
+                success: function (response) {
+                    alert('success');
+                    cropReset();
+                    image.attr('src',response.croppedImageSrc);
+                },
+                error: function () {
+                    alert('error');
+                },
+            });
+        });
+    }
+
+</script>
+
 <script type="text/javascript">
     updateList = function() {
         var input = document.getElementById('fileupload');
@@ -76,16 +248,8 @@
     }
 </script>
 
-<script type="text/javascript">
-    $(function() {
-        $('#datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true,
-        });
-    });
-</script>
 
+<!-- emoticon checkbox limit -->
 <script type="text/javascript">
     $('input[type=checkbox]').on('change', function(e) {
         if ($('input[type=checkbox]:checked').length > 3) {

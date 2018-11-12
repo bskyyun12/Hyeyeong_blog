@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import UserProfile, BabyProfile
+from .models import UserProfile, BabyProfile, Milestone
 from accounts.models import User
 from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
 
@@ -71,3 +71,12 @@ class BabyForm(forms.ModelForm):
         super(BabyForm, self).__init__(*args, **kwargs)
         self.fields['birthday'].widget.widgets[0]=DatePickerInput(format='%Y-%m-%d')
         self.fields['birthday'].widget.widgets[1]=TimePickerInput(format='%H:%M')
+
+class MilestoneForm(forms.ModelForm):
+    class Meta:
+        model = Milestone
+        fields = (
+            'milestone',
+            'date',
+            'description',
+        )

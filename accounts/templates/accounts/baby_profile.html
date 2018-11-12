@@ -7,6 +7,11 @@
 {% block content %}
 
 <div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    </form>
+    <hr>
     {% if request.user.is_superuser %}
     <button onclick="window.location='{% url 'accounts:edit_baby_profile' %}'" class="btn btn-primary">Edit</button>
     <hr>

@@ -70,7 +70,7 @@ def has_post(date_str):
         date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
     except:
         pass
-        
+
     posts = Calendar.objects.all()
     for post in posts:
         has_post = False

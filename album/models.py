@@ -4,6 +4,7 @@ from django.utils import timezone
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from multiselectfield import MultiSelectField
+from django_resized import ResizedImageField
 
 EMOTICONS = (
     ('happy', 'Happy'),
@@ -42,13 +43,13 @@ class Comment(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.post} - {self.comment}'
+        return str(self.post) + str(self.comment)
 
 # Calendar images
 class Image(models.Model):
     post = models.ForeignKey('album.Calendar', related_name='images', on_delete=models.CASCADE)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='calendar_image/%Y/%m')
+    image = ResizedImageField(size=[1600, 1200], upload_to='calendar_image/%Y/%m')
     thumbnail = ImageSpecField(
 		source = 'image',
 		processors = [ResizeToFill(700, 700)], # 처리할 작업 목룍
@@ -57,7 +58,7 @@ class Image(models.Model):
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='image_likes')
 
     def __str__(self):
-        return f'{self.post.title}\'s image'
+        return str(self.pk)+', '+str(self.post.title)+'\'s image'
 
     def total_likes(self):
         return self.likes.count()
@@ -73,7 +74,7 @@ class ImageComment(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='image_replies', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.image} - {self.comment}'
+        return str(self.image) + str(self.comment)
 
 class Friend(models.Model):
     # related_name의 default는 related_name='friend_set'이므로 중복되지 않도록  이름을 지어준것
@@ -107,8 +108,17 @@ class Notification(models.Model):
 
     def __str__(self):
         try:
-            output = f'parent={self.image_comment.parent.id}. {self.sender.first_name} -> {self.receiver.first_name} : {self.image_comment.comment}'
+            output = 'parent='+str(self.image_comment.parent.id)+'. '+str(self.sender.first_name)+' -> '+str(self.receiver.first_name)+':'+str(self.image_comment.comment)
         except:
-            output = f'{self.sender.first_name} -> {self.receiver.first_name}'
+            output = str(self.sender.first_name) + ' -> ' + str(self.receiver.first_name)
 
         return output
+
+
+class YunList(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_date = models.DateTimeField(default=timezone.now)
+    check = models.BooleanField(default=False)
+    content = models.CharField(max_length=200, blank=True)
+    comment = models.ForeignKey('self', null=True, blank=True, related_name='comments', on_delete=models.CASCADE)
+    reply = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)

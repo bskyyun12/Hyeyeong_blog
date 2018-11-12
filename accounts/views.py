@@ -14,7 +14,8 @@ from .forms import (
     RegistrationForm,
     EditProfileForm,
     UserProfileImageForm,
-    BabyForm
+    BabyForm,
+    MilestoneForm
 )
 
 def baby_profile(request):
@@ -28,10 +29,22 @@ def baby_profile(request):
     christmas_post = Calendar.objects.filter(date__month='12', date__day='25').order_by('date').last()
     posts.append(christmas_post)
 
+    if request.method == "POST":
+        form = MilestoneForm(request.POST, request.FILES)
+        if form.is_valid():
+            form = form.save(commit=False)
+            if 'image' in request.FILES:
+                print('--------------milestone test-----------------')
+            form.save()
+            return redirect('accounts:baby_profile')
+    else:
+        form = MilestoneForm()
+
     args = {
         'baby': baby,
         'posts': posts,
         'today': today,
+        'form': form,
     }
     return render(request, 'accounts/baby_profile.html', args)
 

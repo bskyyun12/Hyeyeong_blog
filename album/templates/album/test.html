@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method="post" autocomplete="off">
+    {% csrf_token %}
+    <div class="input-group mb-3">
+        <input type="text" name="content" maxlength="200" required id="title" class="form-control" placeholder="Write a list...">
+        <div class="input-group-append">
+            <button class="add btn btn-primary" type="button">Add Title</button>
+        </div>
+    </div>
+</form>
+
+<button class="btn btn-sm btn-primary" type="button" onclick="edit()" name="button">Edit</button>
+{% for list in lists %}
+    <div class="media pb-2">
+        <div class="media-body">
+            <div class="input-group title">
+                <h5 class="font-weight-bold m-0 p-2">Title : {{ list.content }}</h5>
+                <div class="p-2">
+                    <button class="btn btn-sm btn-primary" type="button" data-toggle="collapse" data-target="#title-collapse{{list.id}}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="collapse" id="title-collapse{{list.id}}">
+                <form method="post" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="content" maxlength="200" required id="{{ list.id }}" class="form-control" placeholder="Write a comment..." aria-describedby="list">
+                        <div class="input-group-append">
+                            <button name="{{ list.id }}" class="add btn btn-primary" type="button" id="list">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <ul class="{{ list.id }}">
+        {% for comment in list.comments.all %}
+            <div class="input-group">
+                <li class="p-2">{{comment.content}}</li>
+                <div class="p-2">
+                    <button class="plus btn btn-sm btn-primary" data-toggle="collapse" data-target="#comment-collapse{{comment.id}}" style="display:none">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="collapse" id="comment-collapse{{comment.id}}">
+                <form method="post" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="content" maxlength="200" required id="{{ comment.id }}" class="form-control" placeholder="Write a sub_content..." aria-describedby="comment">
+                        <div class="input-group-append">
+                            <button name="{{ comment.id }}" class="add btn btn-primary" type="button" id="comment">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <ul class="{{ comment.id }}">
+                {% for reply in comment.replies.all %}
+                    <li>{{reply.content}}</li>
+                {% endfor %}
+            </ul>
+
+        {% endfor %}
+    </ul>
+
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    var input = document.getElementByName("content");
+    input.addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    function edit() {
+        var elements = document.querySelectorAll('.plus');
+        for (var index = 0; index < elements.length; index++) {
+            if (elements[index].style.display == 'block') {
+                elements[index].style.display = 'none';
+            }
+            else {
+                elements[index].style.display = 'block';
+            }
+
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $('.add').click(function() {
+        upload();
+        var list_id;
+        var comment_id;
+        var id = $(this).attr('id');
+        if (id == 'list') {
+            list_id = $(this).attr('name');
+            content = $('#'+list_id).val();
+        }
+        else if (id == 'comment') {
+            comment_id = $(this).attr('name');
+            content = $('#'+comment_id).val();
+        }
+        else {
+            content = $('#title').val();
+        }
+
+        $.ajax({
+            type: "POST", // 데이터를 전송하는 방법을 지정한다.
+            url: "{% url 'album:test' %}", // 통신할 url을 지정한다.
+            data: {
+                'content': content,
+                'list_id': list_id,
+                'comment_id': comment_id,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, // 서버로 데이터를 전송할 때 이 옵션을 사용한다.
+            dataType: "json", // 서버측에서 전송한 데이터를 어떤 형식의 데이터로서 해석할 것인가를 지정한다. 없으면 알아서 판단한다.
+
+            success: function(response) { // 성공했을 때 호출할 콜백을 지정한다.
+                if (list_id) {
+                    $('.'+list_id).append("<li class='p-2'>"+response.output+"</li>");
+
+
+                }
+                else if (comment_id) {
+                    $('.'+comment_id).append("<li class='p-2'>"+response.output+"</li>");
+                }
+                else {
+                    location.reload();
+                }
+
+            },
+            error: function(request, status, error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+        });
+    })
+</script>
+{% endblock %}

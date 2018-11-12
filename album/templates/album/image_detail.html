@@ -8,7 +8,7 @@
         <!-- 수정버튼 -->
         <a class="btn btn-secondary btn-sm" href="{% url 'album:image_edit' pk=image.pk %}">Edit Image</a>
         <!-- 삭제버튼 -->
-        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#delete_image">Delete</button>
+        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_image">Delete</button>
         <!-- delete Modal -->
         <div class="modal fade" id="delete_image" tabindex="-1" role="dialog" aria-labelledby="delete_imageLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -31,6 +31,13 @@
         </div>
         <hr>
         {% endif %}
+        <h3 class="pl-3">{{image.post.date|date:"Y-m-d"}}</h3>
+        <!-- Download -->
+        <a class="text-secondary download pl-3" name="Hyeyeong-{{image.post.date|date:'Ymd'}}" href="{{ image.image.url }}" data-toggle="tooltip" data-placement="right" title="Download">
+            <i class="fas fa-download"></i>
+        </a>
+        <progress id="progress" value="0"></progress>
+        <span id="display"></span>
     </div>
 
     <!-- Button trigger modal -->
@@ -43,8 +50,11 @@
                     {% endfor %}
                 {% endif %}
             </ol>
-
+            <!-- 썸네일 이미지 태그 생성 -->
             <a class="portfolio-box" data-toggle="modal" data-target="#image_view" style="max-width: 100%;">
+                <!-- {% load imagekit %}
+                {% thumbnail "5312x2980" image.image as thumb %} -->
+                <!-- <img class="card-img" src="{{ thumb.url }}"> -->
                 <img class="card-img" src="{{ image.image.url }}" alt="Card image">
                 <div class="portfolio-box-caption">
                     <div class="portfolio-box-caption-content">
@@ -212,6 +222,71 @@
 {% endblock %}
 
 {% block script %}
+    <!-- tooltip -->
+    <script type="text/javascript">
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+    <script type="text/javascript">
+
+    var progressBar = document.getElementById("progress");
+    var display = document.getElementById("display");
+
+    function download() {
+      var xhr = new XMLHttpRequest();
+        xhr.open("GET", $('.download').prop('href') + '?' + Math.floor(Math.random() * 99999), true);
+        xhr.responseType = "text";
+        xhr.onprogress = function(e) {
+            if (e.lengthComputable) {
+                progressBar.max = e.total;
+                progressBar.value = e.loaded;
+                display.innerText = Math.floor((e.loaded / e.total) * 100) + '%';
+            }
+        };
+        xhr.onloadstart = function(e) {
+            progressBar.value = 0;
+            display.innerText = '0%';
+        };
+        xhr.onloadend = function(e) {
+            progressBar.value = e.loaded;
+            display.innerText = '100%';
+        };
+        xhr.onprogress = function (e) {
+            if (e.lengthComputable) {
+                var ratio = Math.floor((e.loaded / e.total) * 100) + '%';
+                console.log(ratio);
+            }
+        };
+        xhr.send(null);
+    }
+    </script>
+
+    <!-- image download -->
+    <script type="text/javascript">
+        $(document).on("click", "a.download", function () {
+            download();
+            var blob_url = $(this).prop('href');
+            var name = $(this).attr('name') + '.png';
+
+            fetch(blob_url)
+              .then(res => res.blob()) // Gets the response and returns it as a blob
+              .then(blob => {
+                // Here's where you get access to the blob
+                // And you can use it for whatever you want
+                // Like calling ref().put(blob)
+                var downloadUrl = URL.createObjectURL(blob);
+                console.log(downloadUrl)
+                var a = document.createElement("a");
+                a.href = downloadUrl;
+                a.download = name;
+                a.click();
+            });
+            return false; //this is critical to stop the click event which will trigger a normal file download
+        });
+    </script>
+
     <script type="text/javascript">
         // 좋아요 버튼 처리
         // 버튼 클릭 > ajax통신 (like url로 전달) > views의 like 메소드에서 리턴하는 값 전달받기 > 성공시 콜백 호출

@@ -7,7 +7,7 @@
         <a class="btn btn-secondary btn-sm" href="{% url 'album:post_edit' pk=post.pk %}">Edit</a>
 
         <!-- 삭제버튼 -->
-        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#delete_image">Delete</button>
+        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_image">Delete</button>
         <!-- delete Modal -->
         <div class="modal fade" id="delete_image" tabindex="-1" role="dialog" aria-labelledby="delete_imageLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -31,8 +31,8 @@
         </div>
 
 
-        <a class="btn btn-danger btn-sm" href="{% url 'album:post_detail' pk=previous_post.pk %}">Prev Day</a>
-        <a class="btn btn-danger btn-sm" href="{% url 'album:post_detail' pk=next_post.pk %}">Next Day</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'album:post_detail' pk=previous_post.pk %}">Prev Day</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'album:post_detail' pk=next_post.pk %}">Next Day</a>
         {% endif %}
         <hr>
 

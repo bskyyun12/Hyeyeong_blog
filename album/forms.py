@@ -16,7 +16,6 @@ class CalendarForm(forms.ModelForm):
             'date': DatePickerInput(format='%Y-%m-%d')
         }
 
-
 class CommentForm(forms.ModelForm):
     # comment = forms.CharField(widget=forms.TextInput(
     #     attrs={
@@ -27,6 +26,8 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('comment',)
+
+
 
 class ImageForm(forms.ModelForm):
     class Meta:

@@ -13,13 +13,13 @@ def comment_send_notification(request, post, comment, parent_id):
                 # if the reply's comment is same as new comment's parent_id
                 if sent_notify.post_comment.parent.id == parent_id:
                     print('')
-                    print(f'Same reply kinds!! deleting previous notify....')
+                    print('Same reply kinds!! deleting previous notify....')
                     sent_notify.delete()
                     break
             # if there is a comment, and new comment is not a reply
             elif parent_id == None:
                 print('')
-                print(f'Same comment kinds!! deleting previous notify....')
+                print('Same comment kinds!! deleting previous notify....')
                 sent_notify.delete()
                 break
 
@@ -36,7 +36,7 @@ def comment_send_notification(request, post, comment, parent_id):
                 post=comment.post,
                 post_comment=comment,
             ).save()
-            print(f'Send notify to {parent_comment.author}')
+            print('Send notify to {parent_comment.author}')
 
 
         replies = Comment.objects.filter(parent=parent_id)
@@ -57,7 +57,7 @@ def comment_send_notification(request, post, comment, parent_id):
                         post=comment.post,
                         post_comment=comment,
                     ).save()
-                    print(f'Send notify to {reply.author}')
+                    print('Send notify to '+str(reply.author))
 
 
     # if the comment is not a reply.(it's just comment on the post)
@@ -70,7 +70,7 @@ def comment_send_notification(request, post, comment, parent_id):
                 post=comment.post,
                 post_comment=comment,
             ).save()
-            print(f'Send notify to {post.author}')
+            print('Send notify to '+str(post.author))
 
 def imageComment_send_notification(request, image, image_comment, parent_id):
 
@@ -85,13 +85,13 @@ def imageComment_send_notification(request, image, image_comment, parent_id):
                 # if the reply's comment is same as new comment's parent_id
                 if sent_notify.image_comment.parent.id == parent_id:
                     print('')
-                    print(f'Same reply kinds!! deleting previous notify....')
+                    print('Same reply kinds!! deleting previous notify....')
                     sent_notify.delete()
                     break
             # if there is a comment, and new comment is not a reply
             elif parent_id == None:
                 print('')
-                print(f'Same comment kinds!! deleting previous notify....')
+                print('Same comment kinds!! deleting previous notify....')
                 sent_notify.delete()
                 break
 
@@ -110,7 +110,7 @@ def imageComment_send_notification(request, image, image_comment, parent_id):
             ).save()
             print('')
             print(1111111111111111111111111111111111111)
-            print(f'Send notify to {parent_comment.author}')
+            print('Send notify to '+str(parent_comment.author))
 
 
         replies = ImageComment.objects.filter(parent=parent_id)
@@ -133,7 +133,7 @@ def imageComment_send_notification(request, image, image_comment, parent_id):
                     ).save()
                     print('')
                     print(222222222222222222222222222222)
-                    print(f'Send notify to {reply.author}')
+                    print('Send notify to '+str(reply.author))
 
     else:
         if image.post.author != request.user:
@@ -145,4 +145,4 @@ def imageComment_send_notification(request, image, image_comment, parent_id):
             ).save()
             print('')
             print(3333333333333333333333333333333333)
-            print(f'Send notify to {image.post.author}')
+            print('Send notify to '+str(image.post.author))

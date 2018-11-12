@@ -122,7 +122,7 @@ class BabyProfile(models.Model):
 		options = {'quality': 60})  		# 저장 옵션
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return str(self.first_name)+str(self.last_name)
 
 class Milestone(models.Model):
     milestone = models.CharField(max_length=30)

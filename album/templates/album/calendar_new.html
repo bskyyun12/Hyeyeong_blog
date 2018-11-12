@@ -3,21 +3,21 @@
 {% block content %}
 <h1>New Calendar post</h1>
 
-<form method="POST" enctype="multipart/form-data" autocomplete="off">
+<form id="calendar_new_form" method="POST" enctype="multipart/form-data" autocomplete="off">
     {% csrf_token %}
 
     <label>Pictures</label>
     <div class="custom-file">
-        <input id="fileupload" type="file" name="image" onchange="javascript:updateList()" class="custom-file-input" accept="image/*" required multiple>
+        <input id="id_image" type="file" name="image" onchange="javascript:updateList()" class="custom-file-input" accept="image/*" required multiple>
         <label class="custom-file-label" for="inputGroupFile02">Upload Pictures</label>
     </div>
     <div id="fileList"></div>
 
     <label>{{ form.title.label }}{{ form.title.errors }}</label>
-    <input placeholder="{{  form.title.label  }}" name="title" class="form-control" required maxlength="30">
+    <input placeholder="{{  form.title.label  }}" id="title" name="title" class="form-control" required maxlength="30">
 
     <label>{{ form.description.label }}{{ form.description.errors }}</label>
-    <input placeholder="{{ form.description.label }}" name="description" class="form-control" required maxlength="300">
+    <input placeholder="{{ form.description.label }}" id="description" name="description" class="form-control" required maxlength="300">
 
     <label>{{ form.date.label }}{{ form.date.errors }}</label>
     {% if date %}
@@ -37,19 +37,146 @@
         {% endfor %}
     </div>
     <hr>
-    <button type="submit" class="save btn btn-primary">Upload</button>
+    <button id="submit_button" type="button" class="save btn btn-primary">Upload</button>
+    <progress id="progress" value="0"></progress>
+    <span id="display">Ready</span>
 </form>
-
 {% endblock %}
 
 {% block script %}
-<!-- Plugins -->
+<!-- upload precess -->
+<script type="text/javascript">
 
+    var imageList = [];
+    var counter = 0;
+    var canvas = document.createElement('canvas');
+
+    $('#submit_button').on('click', function(e){
+        console.log('submit_button click');
+        var file = $('#id_image').prop("files");
+        var len = file.length;
+
+        for (var i = 0; i < file.length; i++) {
+            // var -> let => To load each image
+            // if you use var image here, you'll only get last image
+            let image = document.createElement('img');
+            image.src = URL.createObjectURL(file[i]);
+            image.onload = function() {
+                resize(image, len);
+                console.log('image.src : ' + image.src);
+            };
+        };
+    });
+
+    function resize(image, len) {
+        console.log('resize() call');
+        var ctx = canvas.getContext('2d');
+        canvas.width = 1600;
+        canvas.height = 1200;
+        //console.log('canvas.height : ' + canvas.height);
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        var resizedImage = canvas.toDataURL('image/png');
+
+        imageList.push(resizedImage);
+        counter++;
+        if ( counter === len ) {
+            console.log( 'All images loaded!' );
+            submit();
+        };
+    };
+
+    function submit() {
+        console.log('submit() call');
+        var progressBar = document.getElementById("progress");
+        var display = document.getElementById("display");
+
+        var title = $('#title').val();
+        var description = $('#description').val();
+        var date = $('#datepicker').val();
+        var emoticon = $('#id_emoticons_0').val();
+
+        var formData = new FormData();
+        console.log('imageList.length : '+imageList.length);
+        for (var i = 0; i < imageList.length; i++) {
+            var block = imageList[i].split(";");
+            var contentType = block[0].split(":")[1];
+            var realData = block[1].split(",")[1];
+            var blob = b64toBlob(realData, contentType);
+            formData.append('image'+i, blob);
+        }
+        formData.append('length', imageList.length);
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('date', date);
+        formData.append('emoticon', emoticon);
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'album:calendar_new' date=date %}",
+            headers:{
+                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val()
+            },
+            data: formData,
+            contentType: false,
+            processData: false,
+            xhr: function(){
+                // get the native XmlHttpRequest object
+                var xhr = $.ajaxSettings.xhr();
+                // set the onprogress event handler
+                xhr.upload.onprogress = function(e){
+                    if (e.lengthComputable) {
+                        progressBar.max = e.total;
+                        progressBar.value = e.loaded;
+                        display.innerText = Math.floor((e.loaded / e.total) * 100) + '%';
+                        console.log(display.innerText);
+                    }
+                };
+                xhr.upload.onloadstart = function(e) {
+                    progressBar.value = 0;
+                    display.innerText = '0%';
+                };
+                // set the onload event handler
+                xhr.upload.onload = function(e){
+                    progressBar.value = e.loaded;
+                    display.innerText = '100%';
+                };
+                // return the customized object
+                return xhr;
+            },
+            success: function (response) {
+                alert('Upload Done!');
+                window.location.href= response.url;
+            },
+            error: function () {
+                alert('error');
+            },
+        });
+    }
+
+    function b64toBlob(b64Data, contentType, sliceSize) {
+        console.log('b64toBlob() call');
+        contentType = contentType || '';
+        sliceSize = sliceSize || 512;
+        var byteCharacters = atob(b64Data);
+        var byteArrays = [];
+        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+            var byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+        var blob = new Blob(byteArrays, {type: contentType});
+        return blob;
+    }
+</script>
 
 <!-- Displays selected files -->
 <script type="text/javascript">
     updateList = function() {
-        var input = document.getElementById('fileupload');
+        var input = document.getElementById('id_image');
         var output = document.getElementById('fileList');
 
         htmlStr = 'Selected files:<ul>';
@@ -61,6 +188,7 @@
     }
 </script>
 
+<!-- datepicker -->
 <script type="text/javascript">
     $(function() {
         $('#datepicker').datepicker({
@@ -71,6 +199,7 @@
     });
 </script>
 
+<!-- checkbox limit -->
 <script type="text/javascript">
     $('input[type=checkbox]').on('change', function(e) {
         if ($('input[type=checkbox]:checked').length > 3) {

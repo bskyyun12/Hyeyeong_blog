@@ -18,7 +18,64 @@ from django.http import JsonResponse
 from datetime import datetime
 import re, calendar
 from .notification import comment_send_notification, imageComment_send_notification
-from .templatetags.custom_tags import add_date, subtract_date, subtract_month, subtract_year
+
+
+from .models import YunList
+def test(request):
+    lists = YunList.objects.filter(comment__isnull=True, reply__isnull=True)
+
+    if request.method == 'POST':
+        content = request.POST.get('content', None)
+        list_id = request.POST.get('list_id', None)
+        comment_id = request.POST.get('comment_id', None)
+
+        list_obj = None
+        if list_id != None or comment_id != None:
+            try:
+                list_obj = YunList.objects.get(id=list_id)
+            except:
+                list_obj = YunList.objects.get(id=comment_id)
+
+        list = YunList.objects.create(
+            author = request.user,
+            content = content,
+            comment = list_obj,
+            reply = list_obj,
+        )
+
+        output = list.content
+        id = list.id
+
+        context = {
+            'output' : output,
+            'id': id,
+        }
+        return JsonResponse(context)
+
+
+    args = {
+        'lists': lists,
+    }
+    return render(request, 'album/test.html', args)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @login_required
 def calendar_view(request):
@@ -162,11 +219,15 @@ class CalendarView(TemplateView):
         return render(request, self.template_name)
 
 @login_required
-def post_new(request, date):
+def calendar_new(request, date):
+
     if request.method == 'POST':
+        print('-------calendar_new-------------')
         form = CalendarForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
+
+
             # check if the post exists on selected date
             # if so, send msg to home.html
             try:
@@ -184,13 +245,29 @@ def post_new(request, date):
                 post.author = request.user
                 post.save()
 
-                for img in request.FILES.getlist('image'):
+                # image0 = request.FILES.get('image0')
+                # print(image0)
+                # Image.objects.create(
+                #     post=post,
+                #     image=image0
+                # ).save()
+
+                length = request.POST.get('length')
+                print('---------length------------')
+                print(length)
+                for i in range(int(length)):
+                    image = request.FILES.get('image'+str(i))
+                    print('---------image+str(i)----------')
+                    print('image'+str(i))
                     Image.objects.create(
                         post=post,
-                        image=img
+                        image=image
                     ).save()
-
-                return redirect('album:calendar_view')
+                context = {
+                    'url': 'http://127.0.0.1:8000/album/calendar_view/',
+                }
+                return JsonResponse(context)
+                # return redirect('album:calendar_view')
     else:
         form = CalendarForm()
 
@@ -200,6 +277,7 @@ def post_new(request, date):
         'today': datetime.now(),
     }
     return render(request, 'album/calendar_new.html', args)
+
 
 @login_required
 def post_edit(request, pk):
@@ -215,6 +293,9 @@ def post_edit(request, pk):
                 post.save()
 
                 for img in request.FILES.getlist('image'):
+                    if img.size > 5 * 1024 * 1024:
+                        print(img.size)
+                        print('too big!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     Image.objects.create(
                         post=post,
                         image=img
@@ -363,6 +444,7 @@ class ImageDetailView(TemplateView):
 def image_edit(request, pk):
     image = get_object_or_404(Image, pk=pk)
     if request.user.is_superuser or request.user == image.post.author:
+
         if request.method == "POST":
             form = ImageForm(request.POST, instance=image)
             if form.is_valid():
@@ -438,6 +520,26 @@ def change_friends(request, operation, pk):
     elif operation == 'remove':
         Friend.lose_friend(request.user, new_friend)
     return redirect('accounts:view_profile_with_pk', pk=new_friend.pk)
+
+
+@login_required
+def crop_upload(request):
+    if request.method == 'POST':
+        print('-------crop_upload-------------')
+        croppedImage = request.FILES.get('croppedImage', None)
+        pk = request.POST.get('pk', None)
+        print(pk)
+        image = get_object_or_404(Image, pk=pk)
+        image.__dict__.update(
+            image=croppedImage
+        )
+        image.save()
+
+    context = {
+        'croppedImageSrc': image.image.url,
+    }
+    return JsonResponse(context)
+
 
 @login_required
 def like(request, operation):
